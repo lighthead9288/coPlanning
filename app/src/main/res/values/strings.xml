@@ -1,0 +1,39 @@
+<resources>
+    <string name="app_name">coPlanning</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="login">Login</string>
+    <string name="enter_username">enter username</string>
+    <string name="password">Password</string>
+    <string name="enter_password">enter password</string>
+    <string name="sign_in">Sign in</string>
+    <string name="name">Name</string>
+    <string name="surname">Surname</string>
+    <string name="enter_surname">enter surname</string>
+    <string name="username">Username</string>
+    <string name="register">Register</string>
+    <string name="sun">SUN</string>
+    <string name="mon">MON</string>
+    <string name="tue">TUE</string>
+    <string name="wed">WED</string>
+    <string name="thu">THU</string>
+    <string name="fri">FRI</string>
+    <string name="sat">SAT</string>
+    <string name="last_date">30</string>
+    <string name="save">SAVE</string>
+    <string name="editable">Editable</string>
+    <string name="visibility">Visibility</string>
+    <string name="not_specified">Not specify</string>
+    <string name="time_to">Time to</string>
+    <string name="date_to">Date to</string>
+    <string name="time_from">Time from</string>
+    <string name="date_from">Date from</string>
+    <string name="comment">Comment</string>
+    <string name="task_editor">Task editor</string>
+    <string name="deleteTaskQuestion">Do you want to delete task?</string>
+    <string name="cancel">Cancel</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="full_user_name">%1$s %2$s</string>
+</resources>

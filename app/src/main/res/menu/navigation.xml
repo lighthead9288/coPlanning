@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/mySchedule"
+        android:icon="@drawable/myschedule_128"
+        android:title="My schedule" />
+    <item
+        android:id="@+id/search"
+        android:icon="@drawable/search_128"
+        android:title="Search" />
+    <item
+        android:id="@+id/mappings"
+        android:icon="@drawable/mappings_128"
+        android:title="Mappings" />
+    <item
+        android:id="@+id/notifications"
+        android:icon="@drawable/notifications_128"
+        android:title="Notifications" />
+    <item
+        android:id="@+id/profile"
+        android:icon="@drawable/settings_128"
+        android:title="Settings" />
+</menu>

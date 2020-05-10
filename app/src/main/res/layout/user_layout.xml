@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <import type="android.view.View" />
+        <variable
+            name="user"
+            type="com.example.coplanning.models.User" />
+        <variable
+            name="isMe"
+            type="Boolean" />
+        <variable
+            name="subscibeDirection"
+            type="Boolean" />
+        <variable
+            name="openUserClickListener"
+            type="com.example.coplanning.adapters.OpenUserClickListener" />
+        <variable
+            name="subscribeOnUserClickListener"
+            type="com.example.coplanning.adapters.SubscribeOnUserClickListener" />
+        <variable
+            name="addUserToMappingClickListener"
+            type="com.example.coplanning.adapters.AddUserToMappingClickListener" />
+        <variable
+            name="mappingAddChangeViewListener"
+            type="com.example.coplanning.viewmodels.MappingAddChangeViewListener" />
+        <variable
+            name="subscribeChangeViewListener"
+            type="com.example.coplanning.viewmodels.SubscribeChangeViewListener" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/usershape"
+        android:onClick="@{()->openUserClickListener.onClick(user)}"
+        >
+
+        <TextView
+            android:id="@+id/username"
+            android:layout_width="wrap_content"
+            android:layout_height="38dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp"
+            android:textSize="25dp"
+            android:text="@{user.username}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/fullName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp"
+            android:text="@{@string/full_user_name(user.name, user.surname)}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/username" />
+
+        <ImageButton
+            android:id="@+id/subscribeButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp"
+            android:background="@null"
+            android:visibility="@{isMe?View.GONE:View.VISIBLE}"
+            android:src="@drawable/subscribe_on"
+            android:onClick="@{()->subscribeOnUserClickListener.onClick(user, subscibeDirection, subscribeChangeViewListener)}"
+            app:layout_constraintEnd_toStartOf="@+id/addToMappingButton"
+            app:layout_constraintTop_toBottomOf="@+id/fullName" />
+
+
+        <ImageButton
+            android:id="@+id/addToMappingButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="4dp"
+            android:layout_marginRight="4dp"
+            android:background="@null"
+            android:onClick="@{()->addUserToMappingClickListener.onClick(user, mappingAddChangeViewListener)}"
+            android:src="@drawable/add_to_mapping"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/subscribeButton" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

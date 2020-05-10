@@ -1,0 +1,67 @@
+<layout>
+
+    <data>
+        <variable
+            name="savedMapping"
+            type="com.example.coplanning.models.SavedMapping" />
+        <variable
+            name="dateTimeFrom"
+            type="String" />
+        <variable
+            name="dateTimeTo"
+            type="String" />
+        <variable
+            name="participantsList"
+            type="String" />
+        <variable
+            name="savedMappingClickListener"
+            type="com.example.coplanning.adapters.SavedMappingClickListener" />
+    </data>
+    <androidx.constraintlayout.widget.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/savedmappingresultshape"
+        android:onClick="@{()->savedMappingClickListener.onClick(savedMapping)}"
+        >
+
+        <TextView
+            android:id="@+id/dateTimeFromTv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="16dp"
+            android:textSize="12dp"
+            android:textStyle="bold"
+            android:text="@{dateTimeFrom}"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/dateTimeToTv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="28dp"
+            android:textSize="12dp"
+            android:textStyle="bold"
+            android:text="@{dateTimeTo}"
+            app:layout_constraintStart_toStartOf="@+id/dateTimeFromTv"
+            app:layout_constraintTop_toBottomOf="@+id/dateTimeFromTv" />
+
+        <TextView
+            android:id="@+id/participantsTv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="48dp"
+            android:layout_marginRight="48dp"
+            android:text="@{participantsList}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/dateTimeFromTv" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>
