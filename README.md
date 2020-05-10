@@ -27,7 +27,7 @@ You can also run mappings which you have recently run
 
 In developing:
 1. Push notifications;
-2. Editing another user's tasks;
+2. Delegation tasks to another user;
 3. Pass your tasks to another user;
-4. Tasks search;
+4. Improving performance
 
