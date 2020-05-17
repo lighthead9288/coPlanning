@@ -25,7 +25,9 @@ class SocketClient(): Application() {
 
     private var badgesOperations: BadgesOperations? = null
 
-    private var mSocket: com.github.nkzawa.socketio.client.Socket? = IO.socket("http://10.0.2.2:3000/")
+    private var mSocket: com.github.nkzawa.socketio.client.Socket? =
+       // IO.socket("http://10.0.2.2:3000/")
+        IO.socket("https://co-planning.herokuapp.com/")
 
 
 

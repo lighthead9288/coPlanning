@@ -18,41 +18,38 @@
 
             <TextView
                 android:id="@+id/nameTextView"
+                style="@style/TextViewParamName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="108dp"
-                android:layout_marginLeft="108dp"
                 android:text="@string/name"
                 android:textSize="30dp"
-                style="@style/TextViewParamName"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/nameEditText"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <EditText
                 android:id="@+id/nameEditText"
                 android:layout_width="219dp"
                 android:layout_height="57dp"
-                android:hint="@string/enter_username"
-                android:text="@={viewModel.name}"
-                android:inputType="textPersonName"
                 android:background="@drawable/rounded_edittext"
+                android:hint="@string/enter_username"
+                android:inputType="textPersonName"
+                android:text="@={viewModel.name}"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="@+id/nameTextView"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/nameTextView"
                 app:layout_constraintVertical_bias="0.024" />
 
 
             <TextView
                 android:id="@+id/surnameTextView"
+                style="@style/TextViewParamName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="112dp"
-                android:layout_marginLeft="112dp"
                 android:layout_marginTop="8dp"
                 android:text="@string/surname"
                 android:textSize="30dp"
-                style="@style/TextViewParamName"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/surnameEditText"
                 app:layout_constraintTop_toBottomOf="@+id/nameEditText" />
 
             <EditText
@@ -60,24 +57,23 @@
                 android:layout_width="219dp"
                 android:layout_height="57dp"
                 android:layout_marginTop="8dp"
-                android:hint="@string/enter_surname"
-                android:text="@={viewModel.surname}"
                 android:background="@drawable/rounded_edittext"
+                android:hint="@string/enter_surname"
                 android:inputType="text"
-                app:layout_constraintStart_toStartOf="@+id/surnameTextView"
+                android:text="@={viewModel.surname}"
+                app:layout_constraintEnd_toEndOf="@+id/nameEditText"
+                app:layout_constraintStart_toStartOf="@+id/nameEditText"
                 app:layout_constraintTop_toBottomOf="@+id/surnameTextView" />
 
             <TextView
                 android:id="@+id/usernameTextView"
+                style="@style/TextViewParamName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="112dp"
-                android:layout_marginLeft="112dp"
                 android:layout_marginTop="8dp"
                 android:text="@string/username"
                 android:textSize="30dp"
-                style="@style/TextViewParamName"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/usernameEditText"
                 app:layout_constraintTop_toBottomOf="@+id/surnameEditText" />
 
             <EditText
@@ -85,24 +81,23 @@
                 android:layout_width="219dp"
                 android:layout_height="57dp"
                 android:layout_marginTop="8dp"
-                android:hint="@string/enter_username"
-                android:text="@={viewModel.username}"
                 android:background="@drawable/rounded_edittext"
+                android:hint="@string/enter_username"
                 android:inputType="text"
-                app:layout_constraintStart_toStartOf="@+id/usernameTextView"
+                android:text="@={viewModel.username}"
+                app:layout_constraintEnd_toEndOf="@+id/surnameEditText"
+                app:layout_constraintStart_toStartOf="@+id/surnameEditText"
                 app:layout_constraintTop_toBottomOf="@+id/usernameTextView" />
 
             <TextView
                 android:id="@+id/passwordTextView"
+                style="@style/TextViewParamName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="112dp"
-                android:layout_marginLeft="112dp"
                 android:layout_marginTop="8dp"
                 android:text="@string/password"
                 android:textSize="30dp"
-                style="@style/TextViewParamName"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/passwordEditText"
                 app:layout_constraintTop_toBottomOf="@+id/usernameEditText" />
 
             <EditText
@@ -110,11 +105,12 @@
                 android:layout_width="219dp"
                 android:layout_height="57dp"
                 android:layout_marginTop="8dp"
-                android:hint="@string/enter_password"
-                android:text="@={viewModel.password}"
                 android:background="@drawable/rounded_edittext"
+                android:hint="@string/enter_password"
                 android:inputType="textPassword"
-                app:layout_constraintStart_toStartOf="@+id/passwordTextView"
+                android:text="@={viewModel.password}"
+                app:layout_constraintEnd_toEndOf="@+id/usernameEditText"
+                app:layout_constraintStart_toStartOf="@+id/usernameEditText"
                 app:layout_constraintTop_toBottomOf="@+id/passwordTextView" />
 
             <Button
