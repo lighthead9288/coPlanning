@@ -23,8 +23,8 @@ class ExpandableTaskListAdapter internal constructor(
     private val taskSubscribeCallback: (
         task: TaskComparable,
         direction: Boolean,
-        callback: (subscriberList: List<String>)->Unit)->Unit)
-    : BaseExpandableListAdapter() {
+        callback: (subscriberList: List<String>)->Unit)->Unit
+) : BaseExpandableListAdapter() {
 
     override fun getGroupCount(): Int {
         return groupsList.size
@@ -54,7 +54,12 @@ class ExpandableTaskListAdapter internal constructor(
         return false
     }
 
-    override fun getGroupView(groupPosition: Int, isExpanded: Boolean, convertView: View?, parent: ViewGroup?): View? {
+    override fun getGroupView(
+        groupPosition: Int,
+        isExpanded: Boolean,
+        convertView: View?,
+        parent: ViewGroup?
+    ): View? {
         var convertView = convertView
         val groupTitle = getGroup(groupPosition) as String
         val expListView = parent as ExpandableListView
@@ -70,7 +75,13 @@ class ExpandableTaskListAdapter internal constructor(
         return convertView
     }
 
-    override fun getChildView(groupPosition: Int, childPosition: Int, isLastChild: Boolean, convertView: View?, parent: ViewGroup?): View? {
+    override fun getChildView(
+        groupPosition: Int,
+        childPosition: Int,
+        isLastChild: Boolean,
+        convertView: View?,
+        parent: ViewGroup?
+    ): View? {
         var convertView = convertView
         val task: TaskComparable = getChild(groupPosition, childPosition) as TaskComparable
         if (convertView == null) {

@@ -66,16 +66,13 @@ class NotificationsViewModel(val application: Application) {
                     notificationChanges!!
                 )
             _notifications.value?.add(0, newNotification)
-
         }
     }
 
     private val onGetFullNotificationsList = Emitter.Listener { args ->
         uiScope.launch {
             val notifications = args[0] as JSONArray
-
             val unreadNotifications = JSONArray()
-
             val notificationsList = mutableListOf<Notification>()
 
             for (i in 0 until notifications.length()) {
@@ -103,14 +100,18 @@ class NotificationsViewModel(val application: Application) {
                     e.printStackTrace()
                 }
             }
-
             _notifications.value = notificationsList
-
             notifyAboutReadNotifications(unreadNotifications)
         }
     }
 
-
+    init {
+        val username = setCurUserName()
+        badgesOperations.clearNotificationsAmount()
+        socketClient.setNotificationsListener(onGetNotifications)
+        socketClient.setFullNotificationsListListener(onGetFullNotificationsList)
+        socketClient.getFullNotificationsList(username)
+    }
 
     private fun getNotificationAdditionalInfoFromJSONObject(additionalInfo: JSONObject): NotificationChanges? {
         var nameChanges: String? = additionalInfo.getString("name")
@@ -136,16 +137,7 @@ class NotificationsViewModel(val application: Application) {
 
     private fun setCurUserName(): String? { return sharedPrefs.login}
 
-    init {
-        val username = setCurUserName()
 
-        badgesOperations.clearNotificationsAmount()
-
-        socketClient.setNotificationsListener(onGetNotifications)
-
-        socketClient.setFullNotificationsListListener(onGetFullNotificationsList)
-        socketClient.getFullNotificationsList(username)
-    }
 
 
 

@@ -20,7 +20,10 @@ import org.json.JSONException
 import org.json.JSONObject
 import java.util.*
 
-class MappingResultsViewModel(val application: Application, private val jsonMappingData: String): ViewModel() {
+class MappingResultsViewModel(
+    val application: Application,
+    private val jsonMappingData: String
+) : ViewModel() {
 
     private var viewModelJob = Job()
 
@@ -62,6 +65,9 @@ class MappingResultsViewModel(val application: Application, private val jsonMapp
     val allGroupedMappingResultElements: LiveData<GroupedMappingResultsCollection>
         get() = _allGroupedMappingResultElements
 
+    init {
+        getMappingResult()
+    }
 
     fun updateResultsList() {
         val filteredResults = ArrayList<MappingResultItem>()
@@ -90,24 +96,33 @@ class MappingResultsViewModel(val application: Application, private val jsonMapp
         return maxResult
     }
 
-    private fun getGroupsList(mappingVisibleResultElements: ArrayList<MappingResultItem>): ArrayList<String>? {
+    private fun getGroupsList(
+        mappingVisibleResultElements: ArrayList<MappingResultItem>
+    ): ArrayList<String>? {
         val resultsList = ArrayList<String>()
         Collections.sort<MappingResultItem>(mappingVisibleResultElements, MappingResultItem.dateTimeFromComparator)
         for (mappingResultElement in mappingVisibleResultElements) {
             val dateTimeFrom = mappingResultElement.dateTimeFrom
-            val dateFrom = dateTimeFrom.let { DateAndTimeConverter.getStringDateFromCalendar(it) }
+            val dateFrom = dateTimeFrom.let {
+                DateAndTimeConverter.getStringDateFromCalendar(it)
+            }
             val dateTimeTo = mappingResultElement.dateTimeTo
-            val dateTo = dateTimeTo.let { DateAndTimeConverter.getStringDateFromCalendar(it) }
+            val dateTo = dateTimeTo.let {
+                DateAndTimeConverter.getStringDateFromCalendar(it)
+            }
             if (!resultsList.contains(dateFrom)) dateFrom?.let { resultsList.add(it) }
         }
         return resultsList
     }
 
-    private fun groupMappingVisibleResultsElements(mappingResultElements: ArrayList<MappingResultItem>): GroupedMappingResultsCollection {
+    private fun groupMappingVisibleResultsElements(
+        mappingResultElements: ArrayList<MappingResultItem>
+    ): GroupedMappingResultsCollection {
         val intervalsGroupsList = getGroupsList(mappingResultElements)
         val groupedByDateMappingResultsList = ArrayList<MappingResultsByGroups>()
         for (group in intervalsGroupsList!!) {
-            val curDateElements = getCurDateMappingResultsList(mappingResultElements, group)
+            val curDateElements
+                    = getCurDateMappingResultsList(mappingResultElements, group)
             groupedByDateMappingResultsList.add(
                 MappingResultsByGroups(
                     group,
@@ -121,13 +136,20 @@ class MappingResultsViewModel(val application: Application, private val jsonMapp
         )
     }
 
-    private fun getCurDateMappingResultsList(mappingResultElements: ArrayList<MappingResultItem>, date: String): ArrayList<MappingResultItem> {
+    private fun getCurDateMappingResultsList(
+        mappingResultElements: ArrayList<MappingResultItem>,
+        date: String
+    ): ArrayList<MappingResultItem> {
         val resultsList: ArrayList<MappingResultItem> = ArrayList()
         for (mappingVisibleResultElement in mappingResultElements) {
             val dateTimeFrom = mappingVisibleResultElement.dateTimeFrom
-            val dateFrom = dateTimeFrom.let { DateAndTimeConverter.getStringDateFromCalendar(it) }
+            val dateFrom = dateTimeFrom.let {
+                DateAndTimeConverter.getStringDateFromCalendar(it)
+            }
             val dateTimeTo = mappingVisibleResultElement.dateTimeTo
-            val dateTo = dateTimeTo.let { DateAndTimeConverter.getStringDateFromCalendar(it) }
+            val dateTo = dateTimeTo.let {
+                DateAndTimeConverter.getStringDateFromCalendar(it)
+            }
             if (dateFrom == date && dateTo == date) resultsList.add(mappingVisibleResultElement)
         }
         return resultsList
@@ -195,14 +217,10 @@ class MappingResultsViewModel(val application: Application, private val jsonMapp
 
             _allMappingResultElements.value = allMappingResultElements
 
-            _allGroupedMappingResultElements.value = groupMappingVisibleResultsElements(allMappingResultElements)
-
+            _allGroupedMappingResultElements.value = groupMappingVisibleResultsElements(
+                allMappingResultElements
+            )
         }
-
     }
 
-    init {
-        getMappingResult()
-
-    }
 }

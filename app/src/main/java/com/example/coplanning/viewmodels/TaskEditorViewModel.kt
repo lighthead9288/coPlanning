@@ -12,8 +12,8 @@ import com.example.coplanning.models.task.ServerTaskManager
 import com.example.coplanning.models.task.TaskComparable
 import java.util.*
 
-class TaskEditorViewModel(val application: Application, val onSaveTaskCallback: ()->Unit)
-    : ViewModel(),
+class TaskEditorViewModel(val application: Application, val onSaveTaskCallback: ()->Unit
+) : ViewModel(),
     ITaskListOperations {
 
     val _name = MutableLiveData<String>()

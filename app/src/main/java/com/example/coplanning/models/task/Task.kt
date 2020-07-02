@@ -3,7 +3,7 @@ package com.example.coplanning.models.task
 import com.example.coplanning.helpers.DateAndTimeConverter
 import java.io.Serializable
 
-abstract class Task: Serializable {
+abstract class Task : Serializable {
 
     private var name: String? = null
 

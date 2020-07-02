@@ -62,7 +62,6 @@ class ProfileViewModel(val application: Application) {
     }
 
     init {
-
         _timeFromString.value = "00:00"
         _timeToString.value = "00:00"
 
@@ -76,11 +75,9 @@ class ProfileViewModel(val application: Application) {
     fun logout() {
         badgesOperations.clearMappingsAmount()
         sharedPrefs.clearSharedPreferences()
-
         mappingElementsManager.clearMappingElements()
         socketClient.offListeners()
         socketClient.disconnect()
-
         ScreensDataStorage.clearAll()
     }
 
@@ -104,9 +101,9 @@ class ProfileViewModel(val application: Application) {
         }
     }
 
-
-    private fun getCurUserName(): String? { return sharedPrefs.login}
-
+    private fun getCurUserName(): String? {
+        return sharedPrefs.login
+    }
 
     fun setTimeFromCommand(hours: Int, minutes: Int) {
         _timeFromString.value = DateAndTimeConverter.convertToISOStringTime(hours, minutes)

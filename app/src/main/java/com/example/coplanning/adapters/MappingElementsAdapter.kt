@@ -13,8 +13,8 @@ class MappingElementsAdapter(
     context: Context?,
     private val layout: Int,
     private val mapElements: List<String>,
-    private val removeFromMappingCallback: (element: String) -> Unit)
-    : ArrayAdapter<String?>(context!!, layout, mapElements) {
+    private val removeFromMappingCallback: (element: String) -> Unit
+) : ArrayAdapter<String?>(context!!, layout, mapElements) {
 
     override fun getView(
         position: Int,

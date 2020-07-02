@@ -3,7 +3,7 @@ package com.example.coplanning.models.task
 import com.example.coplanning.models.task.Task
 import java.util.*
 
-open class ServerTask: Task {
+open class ServerTask : Task {
     private var subscriberList: ArrayList<String>? = null
 
     private var taskNumber = 0

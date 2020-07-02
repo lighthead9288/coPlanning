@@ -75,7 +75,8 @@ class SearchFragment : Fragment(), InitViewModel {
             false
         )
         binding.viewModel = viewModel
-        binding.usersSv.setOnQueryTextListener(object: SearchView.OnQueryTextListener, androidx.appcompat.widget.SearchView.OnQueryTextListener {
+        binding.usersSv.setOnQueryTextListener(object: SearchView.OnQueryTextListener,
+            androidx.appcompat.widget.SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String): Boolean {
                 viewModel.searchCommand(query)
                 return false

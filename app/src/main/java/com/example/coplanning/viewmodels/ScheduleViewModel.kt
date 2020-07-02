@@ -13,8 +13,8 @@ import com.github.nkzawa.emitter.Emitter
 import org.json.JSONObject
 import java.util.*
 
-class ScheduleViewModel(val application: Application, val username: String)
-    : ViewModel(),
+class ScheduleViewModel(val application: Application, val username: String
+) : ViewModel(),
     ITaskListOperations {
 
     private val sharedPrefs = SharedPreferencesOperations(application)
@@ -58,8 +58,7 @@ class ScheduleViewModel(val application: Application, val username: String)
     val dateAndTimeFrom: Calendar = Calendar.getInstance()
     val dateAndTimeTo: Calendar = Calendar.getInstance()
 
-    private val serverTaskManager: ServerTaskManager =
-        ServerTaskManager(this)
+    private val serverTaskManager: ServerTaskManager = ServerTaskManager(this)
     private val socketClient: SocketClient = SocketClient()
 
     init {
@@ -82,7 +81,6 @@ class ScheduleViewModel(val application: Application, val username: String)
     }
 
     fun setCalendarCommand() {
-
         _isCalendar.value = !_isCalendar.value!!
         _isParams.value = false
     }
@@ -105,7 +103,7 @@ class ScheduleViewModel(val application: Application, val username: String)
         to[Calendar.MINUTE] = 59
         to[Calendar.SECOND] = 59
 
-        SetIntervalCommand(from, to)
+        setIntervalCommand(from, to)
     }
 
     fun setThisWeekCommand() {
@@ -117,16 +115,16 @@ class ScheduleViewModel(val application: Application, val username: String)
         val to = GregorianCalendar()
         to.add(Calendar.DAY_OF_WEEK, 7 - to[Calendar.DAY_OF_WEEK] + 1)
 
-        SetIntervalCommand(from, to)
+        setIntervalCommand(from, to)
     }
 
     fun setIntervalCommand() {
         _isInterval.value = true
-        SetIntervalCommand(dateAndTimeFrom, dateAndTimeTo)
+        setIntervalCommand(dateAndTimeFrom, dateAndTimeTo)
         getTasks()
     }
 
-    fun SetIntervalCommand(from: Calendar, to: Calendar) {
+    fun setIntervalCommand(from: Calendar, to: Calendar) {
         setFromDateCommand(from)
         setToDateCommand(to)
         getTasks()
@@ -240,11 +238,7 @@ class ScheduleViewModel(val application: Application, val username: String)
                 )))
             }
         }
-
-        _groupedTaskList.value =
-            GroupedTasksCollection(
-                resultTaskList
-            )
+        _groupedTaskList.value = GroupedTasksCollection(resultTaskList)
         hideCalendarAndParams()
 
     }
@@ -254,7 +248,8 @@ class ScheduleViewModel(val application: Application, val username: String)
     }
 
 
-    private fun getCurDateTasks(tasks: ArrayList<TaskComparable>, dateFrom: String): ArrayList<TaskComparable> {
+    private fun getCurDateTasks(tasks: ArrayList<TaskComparable>, dateFrom: String
+    ): ArrayList<TaskComparable> {
         val resultList = ArrayList<TaskComparable>()
         for (task in tasks) {
             val curDate = task.getDateFrom()

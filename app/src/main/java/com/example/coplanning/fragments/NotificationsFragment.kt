@@ -70,7 +70,8 @@ class NotificationsFragment : Fragment(), InitViewModel {
 
     override fun initViewModel(application: Application) {
         if (ScreensDataStorage.curNotificationsScreenData!=null) {
-            val data = ScreensDataStorage.curNotificationsScreenData as NotificationsFragment
+            val data
+                    = ScreensDataStorage.curNotificationsScreenData as NotificationsFragment
             viewModel = data.viewModel
         } else {
             viewModel = NotificationsViewModel(application)

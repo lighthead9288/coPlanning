@@ -4,7 +4,7 @@ import android.app.Application
 import android.view.View
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
-open class MenuOperations: Application() {
+open class MenuOperations : Application() {
 
     fun setMenu(bnv: BottomNavigationView?) {
         menu = bnv

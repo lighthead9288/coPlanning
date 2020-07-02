@@ -62,17 +62,13 @@ class MappingsViewModel(val application: Application): ViewModel() {
     val savedMappings: LiveData<List<SavedMapping>>
         get() = _savedMappings
 
-
     var dateAndTimeFrom: Calendar = Calendar.getInstance()
     var dateAndTimeTo: Calendar = Calendar.getInstance()
 
     private val onSearchesAnswer = Emitter.Listener { args ->
         uiScope.launch {
             val data = args[0] as JSONArray
-
-            val savedMappingsResults: ArrayList<SavedMapping> =
-                ArrayList()
-
+            val savedMappingsResults: ArrayList<SavedMapping> = ArrayList()
             for (i in 0 until data.length()) {
                 var jsonobject: JSONObject
                 try {
@@ -102,35 +98,36 @@ class MappingsViewModel(val application: Application): ViewModel() {
                     e.printStackTrace()
                 }
             }
-
             _savedMappings.value = savedMappingsResults
         }
-
     }
 
 
     init {
-
         initDates()
         updateMappingPanelState()
-
         socketClient.setSavedMappingsListener(onSearchesAnswer)
         getSavedMappings()
-
     }
 
     fun getJSONMappingData(): JSONObject {
-        val isoMapDateFrom = DateAndTimeConverter.convertStringDateToISO(_dateFromString.value.toString())
-        val isoMapTimeFrom = DateAndTimeConverter.convertStringTimeToISO(_timeFromString.value.toString())
-        val isoMapDateTo = DateAndTimeConverter.convertStringDateToISO(_dateToString.value.toString())
-        val isoMapTimeTo = DateAndTimeConverter.convertStringTimeToISO(_timeToString.value.toString())
-
+        val isoMapDateFrom = DateAndTimeConverter.convertStringDateToISO(
+            _dateFromString.value.toString()
+        )
+        val isoMapTimeFrom = DateAndTimeConverter.convertStringTimeToISO(
+            _timeFromString.value.toString()
+        )
+        val isoMapDateTo = DateAndTimeConverter.convertStringDateToISO(
+            _dateToString.value.toString()
+        )
+        val isoMapTimeTo = DateAndTimeConverter.convertStringTimeToISO(
+            _timeToString.value.toString()
+        )
         val mappingElements = mappingElementsManager.getMappingElements()
         val jsonMappingElements = JSONArray()
         for (mElement in mappingElements) {
             jsonMappingElements.put(mElement)
         }
-
         val jsonMappingData = JSONObject()
         try {
             jsonMappingData.put("dateFrom", isoMapDateFrom)
@@ -146,10 +143,24 @@ class MappingsViewModel(val application: Application): ViewModel() {
     }
 
     private fun initDates() {
-        setDateFromCommand(dateAndTimeFrom[Calendar.YEAR], dateAndTimeFrom[Calendar.MONTH], dateAndTimeFrom[Calendar.DAY_OF_MONTH])
-        setTimeFromCommand(dateAndTimeFrom[Calendar.HOUR_OF_DAY], dateAndTimeFrom[Calendar.MINUTE])
-        setDateToCommand(dateAndTimeTo[Calendar.YEAR], dateAndTimeTo[Calendar.MONTH], dateAndTimeTo[Calendar.DAY_OF_MONTH])
-        setTimeToCommand(dateAndTimeTo[Calendar.HOUR_OF_DAY], dateAndTimeTo[Calendar.MINUTE])
+        setDateFromCommand(
+            dateAndTimeFrom[Calendar.YEAR],
+            dateAndTimeFrom[Calendar.MONTH],
+            dateAndTimeFrom[Calendar.DAY_OF_MONTH]
+        )
+        setTimeFromCommand(
+            dateAndTimeFrom[Calendar.HOUR_OF_DAY],
+            dateAndTimeFrom[Calendar.MINUTE]
+        )
+        setDateToCommand(
+            dateAndTimeTo[Calendar.YEAR],
+            dateAndTimeTo[Calendar.MONTH],
+            dateAndTimeTo[Calendar.DAY_OF_MONTH]
+        )
+        setTimeToCommand(
+            dateAndTimeTo[Calendar.HOUR_OF_DAY],
+            dateAndTimeTo[Calendar.MINUTE]
+        )
     }
 
     fun setMappingParameters(mapping: SavedMapping) {
@@ -167,17 +178,18 @@ class MappingsViewModel(val application: Application): ViewModel() {
 
     private fun updateBadges() {
         val curMappingElements = mappingElementsManager.getMappingElements()
-        if (curMappingElements.count()==0)
+        if (curMappingElements.count()==0) {
             badgesOperations.clearMappingsAmount()
-        else
+        } else {
             badgesOperations.setMappingsAmount(curMappingElements.count())
+        }
     }
 
     fun removeUserFromMapping(username: String) {
         val curMappingElements = mappingElementsManager.getMappingElements()
-        if (curMappingElements.contains(username))
+        if (curMappingElements.contains(username)) {
             mappingElementsManager.removeMappingElement(username)
-
+        }
         updateBadges()
         updateMappingPanelState()
     }
@@ -218,8 +230,5 @@ class MappingsViewModel(val application: Application): ViewModel() {
         val username = getCurUserName()
         socketClient.getSavedMappings(username)
     }
-
-
-
 
 }

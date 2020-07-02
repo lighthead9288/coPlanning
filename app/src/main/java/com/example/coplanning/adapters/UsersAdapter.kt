@@ -17,8 +17,8 @@ class UsersAdapter(
     private val openUserClickListener: OpenUserClickListener,
     private val subscribeOnUserClickListener: SubscribeOnUserClickListener,
     private val addUserToMappingClickListener: AddUserToMappingClickListener,
-    private val username: String)
-    : ListAdapter<User, UsersAdapter.ViewHolder>(UsersListDiffCallback()) {
+    private val username: String
+) : ListAdapter<User, UsersAdapter.ViewHolder>(UsersListDiffCallback()) {
 
     class ViewHolder private constructor(private var binding: UserLayoutBinding)
         : RecyclerView.ViewHolder(binding.root) {

@@ -6,7 +6,7 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
 import com.example.coplanning.R
 
-class FragmentOperations: Application {
+class FragmentOperations : Application {
     private var supportFragmentManager: FragmentManager? = null
 
     constructor(supportFragmentManager: FragmentManager?) {

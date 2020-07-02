@@ -39,33 +39,6 @@ class SearchViewModel(val application: Application): ViewModel() {
 
     private var query = ""
 
-    fun getCurUserName(): String? { return sharedPrefs.login}
-
-
-    fun addUserToMapping(username: String, listener: MappingAddChangeViewListener) {
-        var curMappingElements = mappingElementsManager.getMappingElements()
-        if (!curMappingElements.contains(username))
-            mappingElementsManager.addMappingElement(username)
-        else
-            mappingElementsManager.removeMappingElement(username)
-
-        curMappingElements = mappingElementsManager.getMappingElements()
-        badgesOperations.setMappingsAmount(curMappingElements.count())
-        listener.onMappingAdd(username)
-    }
-    fun searchCommand(searchString: String) {
-        query = searchString
-        socketClient.search(searchString)
-    }
-
-    fun subscribe(user: User, direction: Boolean, listener: SubscribeChangeViewListener) {
-        curUser = user
-        onSubscribeChangeViewListener = listener
-
-        socketClient.subscribeOnUser(user.username, getCurUserName(), direction)
-        socketClient.setUserSubscribeListener(onSubscribeAnswer)
-    }
-
     private var curUser: User? = null
     private var onSubscribeChangeViewListener: SubscribeChangeViewListener? = null
     private val onSubscribeAnswer = Emitter.Listener {args ->
@@ -89,7 +62,6 @@ class SearchViewModel(val application: Application): ViewModel() {
         }
     }
 
-    //region Search results listener
     private val onSearchAnswer = Emitter.Listener { args ->
         uiScope.launch {
             val data = args[0] as JSONArray
@@ -109,6 +81,32 @@ class SearchViewModel(val application: Application): ViewModel() {
 
     init {
         socketClient.setSearchAnswerListener(onSearchAnswer)
+    }
+
+    fun getCurUserName(): String? { return sharedPrefs.login}
+
+    fun addUserToMapping(username: String, listener: MappingAddChangeViewListener) {
+        var curMappingElements = mappingElementsManager.getMappingElements()
+        if (!curMappingElements.contains(username))
+            mappingElementsManager.addMappingElement(username)
+        else
+            mappingElementsManager.removeMappingElement(username)
+
+        curMappingElements = mappingElementsManager.getMappingElements()
+        badgesOperations.setMappingsAmount(curMappingElements.count())
+        listener.onMappingAdd(username)
+    }
+    fun searchCommand(searchString: String) {
+        query = searchString
+        socketClient.search(searchString)
+    }
+
+    fun subscribe(user: User, direction: Boolean, listener: SubscribeChangeViewListener) {
+        curUser = user
+        onSubscribeChangeViewListener = listener
+
+        socketClient.subscribeOnUser(user.username, getCurUserName(), direction)
+        socketClient.setUserSubscribeListener(onSubscribeAnswer)
     }
 
 }

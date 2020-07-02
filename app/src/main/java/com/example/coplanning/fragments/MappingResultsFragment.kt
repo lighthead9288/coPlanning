@@ -50,15 +50,29 @@ class MappingResultsFragment : Fragment(), InitViewModel {
 
     private fun initObservables() {
         val application = requireNotNull(this.activity).application
-        viewModel.allGroupedMappingResultElements.observe(viewLifecycleOwner, Observer {
-            val groups = it.groupedMappingResults.map { it.groupName }
-            val adapter = ExpandableMappingIntervalsAdapter(application, groups, it.groupedMappingResults, R.layout.mapping_result_group_layout, R.layout.mapping_interval_layout)
-            binding.mappingIntervals.setAdapter(adapter)
-        })
+        viewModel.allGroupedMappingResultElements.observe(
+            viewLifecycleOwner,
+            Observer {
+                val groups = it.groupedMappingResults.map { it.groupName }
+                val adapter = ExpandableMappingIntervalsAdapter(
+                    application,
+                    groups,
+                    it.groupedMappingResults,
+                    R.layout.mapping_result_group_layout,
+                    R.layout.mapping_interval_layout
+                )
+                binding.mappingIntervals.setAdapter(adapter)
+            }
+        )
     }
 
     private fun initBinding(inflater: LayoutInflater, container: ViewGroup?) {
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_mapping_results, container, false)
+        binding = DataBindingUtil.inflate(
+            inflater,
+            R.layout.fragment_mapping_results,
+            container,
+            false
+        )
         binding.viewModel = viewModel
 
         binding.allParticapants.setOnClickListener {
@@ -76,7 +90,8 @@ class MappingResultsFragment : Fragment(), InitViewModel {
 
     override fun initViewModel(application: Application) {
         if (ScreensDataStorage.curMappingsScreenData!=null) {
-            val data = ScreensDataStorage.curMappingsScreenData as MappingResultsFragment
+            val data
+                    = ScreensDataStorage.curMappingsScreenData as MappingResultsFragment
             viewModel = data.viewModel
         } else {
             viewModel = MappingResultsViewModel(application, mappingData.toString())

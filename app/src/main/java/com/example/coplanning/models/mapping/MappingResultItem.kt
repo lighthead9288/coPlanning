@@ -3,7 +3,6 @@ package com.example.coplanning.models.mapping
 import java.util.*
 
 class MappingResultItem {
-
     private var _users: ArrayList<String>
     var users: ArrayList<String>
         get() = _users

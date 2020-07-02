@@ -24,7 +24,7 @@ class ExpandableMappingIntervalsAdapter(
     private val mappingResultsCollection: List<MappingResultsByGroups>,
     private val groupLayout: Int,
     private val mappingIntervalLayout: Int
-    ) : BaseExpandableListAdapter() {
+) : BaseExpandableListAdapter() {
 
     override fun getGroupCount(): Int {
         return groupsList.size
@@ -54,7 +54,12 @@ class ExpandableMappingIntervalsAdapter(
         return false
     }
 
-    override fun getGroupView(groupPosition: Int, isExpanded: Boolean, convertView: View?, parent: ViewGroup?): View? {
+    override fun getGroupView(
+        groupPosition: Int,
+        isExpanded: Boolean,
+        convertView: View?,
+        parent: ViewGroup?
+    ): View? {
         var convertView = convertView
         val groupTitle = getGroup(groupPosition) as String
         val expListView = parent as ExpandableListView
@@ -70,9 +75,16 @@ class ExpandableMappingIntervalsAdapter(
         return convertView
     }
 
-    override fun getChildView(groupPosition: Int, childPosition: Int, isLastChild: Boolean, convertView: View?, parent: ViewGroup?): View? {
+    override fun getChildView(
+        groupPosition: Int,
+        childPosition: Int,
+        isLastChild: Boolean,
+        convertView: View?,
+        parent: ViewGroup?
+    ): View? {
         var convertView = convertView
-        val curMappingResultElement = getChild(groupPosition, childPosition) as MappingResultItem
+        val curMappingResultElement
+                = getChild(groupPosition, childPosition) as MappingResultItem
         if (convertView == null) {
             val inflater =
                 context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater

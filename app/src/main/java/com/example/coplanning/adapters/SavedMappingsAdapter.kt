@@ -11,8 +11,8 @@ import com.example.coplanning.helpers.DateAndTimeConverter
 import com.example.coplanning.models.mapping.SavedMapping
 
 class SavedMappingsAdapter(
-    private val savedMappingClickListener: SavedMappingClickListener)
-    : ListAdapter<SavedMapping, SavedMappingsAdapter.ViewHolder>(SavedMappingsListDiffCallback()) {
+    private val savedMappingClickListener: SavedMappingClickListener
+) : ListAdapter<SavedMapping, SavedMappingsAdapter.ViewHolder>(SavedMappingsListDiffCallback()) {
 
     class ViewHolder private constructor(val binding: SavedMappingLayoutBinding)
         : RecyclerView.ViewHolder(binding.root) {

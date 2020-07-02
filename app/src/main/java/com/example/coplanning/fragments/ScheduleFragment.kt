@@ -88,23 +88,30 @@ open class ScheduleFragment : Fragment(), ISchedule, InitViewModel {
             val groupsList = it.tasksDays.map { it -> it.day }
             val groupedTasks = it.tasksDays
 
-            val adapter = ExpandableTaskListAdapter(application, groupsList, groupedTasks, R.layout.task_group_layout, getTaskLayout(), sharedPrefs.login!!.toString(),
-                {task->viewModel.setTaskCompleted(task)},
-                {task->
-                    val dialogView = LayoutInflater.from(context).inflate(R.layout.delete_task_dialog,null)
-
-                    val builder = AlertDialog.Builder(context).setView(dialogView).setTitle("")
+            val adapter = ExpandableTaskListAdapter(
+                application,
+                groupsList,
+                groupedTasks,
+                R.layout.task_group_layout,
+                getTaskLayout(),
+                sharedPrefs.login!!.toString(),
+                { task->viewModel.setTaskCompleted(task)
+                },
+                { task->
+                    val dialogView = LayoutInflater.from(context).inflate(
+                        R.layout.delete_task_dialog,
+                        null
+                    )
+                    val builder
+                            = AlertDialog.Builder(context).setView(dialogView).setTitle("")
                     val alertDialog = builder.show()
-
                     dialogView.confirmDelete.setOnClickListener {
                         alertDialog.dismiss()
                         viewModel.deleteTask(task)
                     }
-
                     dialogView.cancelDelete.setOnClickListener {
                         alertDialog.dismiss()
                     }
-
                 },
                 { task, direction, callback ->
                     viewModel.subscribeOnUserTask(task, direction, callback)
@@ -134,7 +141,7 @@ open class ScheduleFragment : Fragment(), ISchedule, InitViewModel {
         )
         binding.viewModel = viewModel
         binding.calendarView.setICalendarCellClick { calendar: Calendar ->
-            viewModel.SetIntervalCommand(calendar, calendar)
+            viewModel.setIntervalCommand(calendar, calendar)
         }
         binding.dateFrom.setOnClickListener { showSetDateFromDialog() }
         binding.dateTo.setOnClickListener { showSetDateToDialog() }

@@ -17,8 +17,8 @@ class CalendarGridAdapter(
     context: Context?,
     private val monthlyDates: List<Date>,
     private val currentDate: Calendar,
-    private val calendarCellClickCallback: ((Calendar)->Unit)?)
-    : ArrayAdapter<Any?>(context!!, R.layout.calendar_cell_layout) {
+    private val calendarCellClickCallback: ((Calendar)->Unit)?
+) : ArrayAdapter<Any?>(context!!, R.layout.calendar_cell_layout) {
 
     private val mInflater: LayoutInflater = LayoutInflater.from(context)
 

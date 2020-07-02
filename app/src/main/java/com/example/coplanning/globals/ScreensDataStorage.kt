@@ -3,7 +3,7 @@ package com.example.coplanning.globals
 import android.app.Application
 import androidx.fragment.app.Fragment
 
-class ScreensDataStorage: Application() {
+class ScreensDataStorage : Application() {
 
     companion object {
         var curScheduleScreenData: Fragment? = null

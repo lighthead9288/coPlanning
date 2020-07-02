@@ -32,7 +32,8 @@ class CalendarCustomView : LinearLayout {
         setPreviousButtonClickEvent()
         setNextButtonClickEvent()
     }
-    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
+    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int)
+            : super(context, attrs, defStyleAttr)
 
     fun setICalendarCellClick(calendarCellClickCallback: (Calendar)->Unit) {
         calendarCellClick = calendarCellClickCallback

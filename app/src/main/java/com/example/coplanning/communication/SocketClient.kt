@@ -10,7 +10,7 @@ import org.json.JSONException
 import org.json.JSONObject
 
 
-class SocketClient(): Application() {
+class SocketClient() : Application() {
 
     constructor(act: Activity?, ops: BadgesOperations?): this() {
         activity = act
