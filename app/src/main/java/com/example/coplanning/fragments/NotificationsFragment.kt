@@ -14,7 +14,6 @@ import com.example.coplanning.adapters.NotificationsAdapter
 import com.example.coplanning.databinding.FragmentNotificationsBinding
 import com.example.coplanning.globals.ScreensDataStorage
 import com.example.coplanning.viewmodels.NotificationsViewModel
-import com.example.coplanning.viewmodels.ProfileViewModel
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -26,10 +25,14 @@ private const val ARG_PARAM2 = "param2"
  * Use the [NotificationsFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class NotificationsFragment : Fragment() {
+class NotificationsFragment : Fragment(), InitViewModel {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
+
+    private lateinit var binding: FragmentNotificationsBinding
+    private lateinit var viewModel: NotificationsViewModel
+    private lateinit var notificationsAdapter: NotificationsAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,40 +40,39 @@ class NotificationsFragment : Fragment() {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
         }
-
         val application = requireNotNull(this.activity).application
-        InitViewModel(application)
+        initViewModel(application)
     }
 
-    lateinit var viewModel: NotificationsViewModel
-
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
-        val binding: FragmentNotificationsBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_notifications, container, false)
-        binding.viewModel = viewModel
-
-        val adapter = NotificationsAdapter()
-        binding.notificationsListRv.adapter = adapter
-
-        viewModel.notifications.observe(viewLifecycleOwner, Observer {
-            adapter.submitList(it)
-        })
-
-        binding.lifecycleOwner = this
-
+        initBinding(inflater, container)
+        initObservables()
         return binding.root
     }
 
-    fun InitViewModel(application: Application) {
+    private fun initObservables() {
+        viewModel.notifications.observe(viewLifecycleOwner, Observer {
+            notificationsAdapter.submitList(it)
+        })
+    }
+
+    private fun initBinding(inflater: LayoutInflater, container: ViewGroup?) {
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_notifications, container, false)
+        binding.viewModel = viewModel
+        notificationsAdapter = NotificationsAdapter()
+        binding.notificationsListRv.adapter = notificationsAdapter
+        binding.lifecycleOwner = this
+    }
+
+    override fun initViewModel(application: Application) {
         if (ScreensDataStorage.curNotificationsScreenData!=null) {
             val data = ScreensDataStorage.curNotificationsScreenData as NotificationsFragment
             viewModel = data.viewModel
-        }
-
-        else {
+        } else {
             viewModel = NotificationsViewModel(application)
             ScreensDataStorage.curProfileScreenData = this
         }

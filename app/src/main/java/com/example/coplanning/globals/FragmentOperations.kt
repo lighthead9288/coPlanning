@@ -7,28 +7,25 @@ import androidx.fragment.app.FragmentTransaction
 import com.example.coplanning.R
 
 class FragmentOperations: Application {
-
-    private var SupportFragmentManager: FragmentManager? = null
-
+    private var supportFragmentManager: FragmentManager? = null
 
     constructor(supportFragmentManager: FragmentManager?) {
-        SupportFragmentManager = supportFragmentManager
+        this.supportFragmentManager = supportFragmentManager
     }
 
-    fun LoadFragment(fragment: Fragment) {
-        // load fragment
-        val transaction: FragmentTransaction = SupportFragmentManager!!.beginTransaction()
+    fun loadFragment(fragment: Fragment) {
+        val transaction: FragmentTransaction = supportFragmentManager!!.beginTransaction()
         transaction.replace(R.id.frame_container, fragment)
         transaction.addToBackStack(null)
         transaction.commit()
     }
 
-    fun ClearBackStack() {
-        if (SupportFragmentManager!!.getBackStackEntryCount() > 0) {
+    fun clearBackStack() {
+        if (supportFragmentManager!!.backStackEntryCount > 0) {
             val first: FragmentManager.BackStackEntry =
-                SupportFragmentManager!!.getBackStackEntryAt(0)
-            SupportFragmentManager!!.popBackStack(
-                first.getId(),
+                supportFragmentManager!!.getBackStackEntryAt(0)
+            supportFragmentManager!!.popBackStack(
+                first.id,
                 FragmentManager.POP_BACK_STACK_INCLUSIVE
             )
         }

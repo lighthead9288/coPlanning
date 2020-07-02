@@ -11,9 +11,9 @@ import retrofit2.converter.gson.GsonConverterFactory
 class RetrofitClient {
 
    constructor() {
-        val okHttpClientBuilder: OkHttpClient.Builder = okhttp3.OkHttpClient.Builder()
+        val okHttpClientBuilder: OkHttpClient.Builder = OkHttpClient.Builder()
         val logging = HttpLoggingInterceptor()
-        logging.setLevel(HttpLoggingInterceptor.Level.BODY)
+        logging.level = HttpLoggingInterceptor.Level.BODY
         okHttpClientBuilder.addInterceptor(logging)
         Log.d("MyLog", "Connecting with localhost:")
         val builder: Retrofit.Builder = Retrofit.Builder()
@@ -25,9 +25,9 @@ class RetrofitClient {
         retrofit = builder.build()
     }
 
-    private lateinit var retrofit: Retrofit
+    private var retrofit: Retrofit
 
-    fun GetRetrofitEntity(): Retrofit {
+    fun getRetrofitEntity(): Retrofit {
         return retrofit
     }
 }

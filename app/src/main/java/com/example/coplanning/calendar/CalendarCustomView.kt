@@ -8,7 +8,6 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.*
-import android.widget.AdapterView.OnItemSelectedListener
 import com.example.coplanning.R
 import java.text.SimpleDateFormat
 import java.util.*
@@ -18,39 +17,27 @@ class CalendarCustomView : LinearLayout {
     private var nextButton: ImageView? = null
     private var currentDate: TextView? = null
     private var calendarGridView: GridView? = null
-    private val firstWeekDaySelect: Spinner? = null
-    private val month = 0
-    private val year = 0
     private val formatter =
         SimpleDateFormat("MMMM yyyy", Locale.ENGLISH)
     private val cal = Calendar.getInstance(Locale.ENGLISH)
-   // private var context: Context? = null
     private var mAdapter: CalendarGridAdapter? = null
     private var weekDaysMap: Map<*, *>? = null
     private var firstWeekDayNumber = 1
-    private val weekDaysList =
-        arrayOf("MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN")
-    private var calendarCellClick: ((Calendar) -> Unit)? = null
-    fun SetICalendarCellClick(calendarCellClickCallback: (Calendar)->Unit) {
-        calendarCellClick = calendarCellClickCallback
-        setUpCalendarAdapter()
-    }
 
-    constructor(
-        context: Context?,
-        calendarCellClick: (Calendar) -> Unit
-    ) : super(context) {
-        this.calendarCellClick = calendarCellClick
-    }
+    private var calendarCellClick: ((Calendar) -> Unit)? = null
+
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs) {
-       // this.context = context
         initializeUILayout()
         setUpCalendarAdapter()
         setPreviousButtonClickEvent()
         setNextButtonClickEvent()
     }
+    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
-    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr) {}
+    fun setICalendarCellClick(calendarCellClickCallback: (Calendar)->Unit) {
+        calendarCellClick = calendarCellClickCallback
+        setUpCalendarAdapter()
+    }
 
     private fun initializeUILayout() {
         val inflater =
@@ -64,24 +51,6 @@ class CalendarCustomView : LinearLayout {
         currentDate = view.findViewById<View>(R.id.display_current_date) as TextView
         calendarGridView = view.findViewById<View>(R.id.calendar_grid) as GridView
 
-    }
-
-    private fun setDaysInWeekItemSelectEvent() {
-        firstWeekDaySelect!!.onItemSelectedListener = object : OnItemSelectedListener {
-            override fun onItemSelected(
-                parent: AdapterView<*>?,
-                view: View,
-                position: Int,
-                id: Long
-            ) {
-                val pos = if (position < 6) position + 1 else 0
-                firstWeekDayNumber = pos
-                createWeekDaysTextViews()
-                setUpCalendarAdapter()
-            }
-
-            override fun onNothingSelected(parent: AdapterView<*>?) {}
-        }
     }
 
     private fun setPreviousButtonClickEvent() {
@@ -143,10 +112,12 @@ class CalendarCustomView : LinearLayout {
         if (firstDayOfTheMonth >= 0) mCal.add(
             Calendar.DAY_OF_MONTH,
             -firstDayOfTheMonth
-        ) else mCal.add(
-            Calendar.DAY_OF_MONTH,
-            -firstDayOfTheMonth - daysInWeek
-        )
+        ) else {
+            mCal.add(
+                Calendar.DAY_OF_MONTH,
+                -firstDayOfTheMonth - daysInWeek
+            )
+        }
         while (dayValueInCells.size < MAX_CALENDAR_COLUMN) {
             dayValueInCells.add(mCal.time)
             mCal.add(Calendar.DAY_OF_MONTH, 1)

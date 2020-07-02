@@ -8,7 +8,7 @@ import com.example.coplanning.communication.SocketClient
 import com.example.coplanning.globals.BadgesOperations
 import com.example.coplanning.globals.MappingElementsManager
 import com.example.coplanning.globals.SharedPreferencesOperations
-import com.example.coplanning.models.User
+import com.example.coplanning.models.user.User
 import com.github.nkzawa.emitter.Emitter
 import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
@@ -29,51 +29,47 @@ class SearchViewModel(val application: Application): ViewModel() {
 
     private val socketClient: SocketClient = SocketClient()
 
-    val mappingElementsManager: MappingElementsManager = MappingElementsManager()
+    private val mappingElementsManager: MappingElementsManager = MappingElementsManager()
 
     private val badgesOperations: BadgesOperations = BadgesOperations()
 
-
-    val _usersList = MutableLiveData<List<User>>()
+    private val _usersList = MutableLiveData<List<User>>()
     val usersList: LiveData<List<User>>
         get() = _usersList
 
-    var query = ""
+    private var query = ""
 
-    fun GetCurUserName(): String? { return sharedPrefs.login}
+    fun getCurUserName(): String? { return sharedPrefs.login}
 
 
-    fun AddUserToMapping(username: String, listener: MappingAddChangeViewListener) {
-        var curMappingElements = mappingElementsManager.GetMappingElements()
+    fun addUserToMapping(username: String, listener: MappingAddChangeViewListener) {
+        var curMappingElements = mappingElementsManager.getMappingElements()
         if (!curMappingElements.contains(username))
-            mappingElementsManager.AddMappingElement(username)
+            mappingElementsManager.addMappingElement(username)
         else
-            mappingElementsManager.RemoveMappingElement(username)
+            mappingElementsManager.removeMappingElement(username)
 
-        curMappingElements = mappingElementsManager.GetMappingElements()
-        badgesOperations.SetMappingsAmount(curMappingElements.count())
-       // SearchCommand(query)
+        curMappingElements = mappingElementsManager.getMappingElements()
+        badgesOperations.setMappingsAmount(curMappingElements.count())
         listener.onMappingAdd(username)
     }
-    fun SearchCommand(searchString: String) {
+    fun searchCommand(searchString: String) {
         query = searchString
-        if (!searchString.isNullOrEmpty())
-            socketClient.Search(searchString)
+        socketClient.search(searchString)
     }
 
-    fun Subscribe(user: User, direction: Boolean, listener: SubscribeChangeViewListener) {
+    fun subscribe(user: User, direction: Boolean, listener: SubscribeChangeViewListener) {
         curUser = user
         onSubscribeChangeViewListener = listener
 
-        socketClient.SubscribeOnUser(user.username, GetCurUserName(), direction)
-        socketClient.SetUserSubscribeListener(onSubscribeAnswer)
+        socketClient.subscribeOnUser(user.username, getCurUserName(), direction)
+        socketClient.setUserSubscribeListener(onSubscribeAnswer)
     }
 
     private var curUser: User? = null
     private var onSubscribeChangeViewListener: SubscribeChangeViewListener? = null
     private val onSubscribeAnswer = Emitter.Listener {args ->
         uiScope.launch {
-            //SearchCommand(query)
             try {
                 val subscriber = args[1] as String
                 val direction = args[2] as Boolean
@@ -97,11 +93,9 @@ class SearchViewModel(val application: Application): ViewModel() {
     private val onSearchAnswer = Emitter.Listener { args ->
         uiScope.launch {
             val data = args[0] as JSONArray
-            val usersList: ArrayList<User> = ArrayList<User>()
+            val usersList: ArrayList<User> = ArrayList()
             for (i in 0 until data.length()) {
-               // var jsonobject: JSONObject
                 try {
-                 //   jsonobject = data.getJSONObject(i)
                     val user: User = Gson().fromJson(data.getString(i), User::class.java)
                     usersList.add(user)
                 } catch (e: JSONException) {
@@ -114,7 +108,7 @@ class SearchViewModel(val application: Application): ViewModel() {
     }
 
     init {
-        socketClient.SetSearchAnswerListener(onSearchAnswer)
+        socketClient.setSearchAnswerListener(onSearchAnswer)
     }
 
 }

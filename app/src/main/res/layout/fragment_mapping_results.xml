@@ -29,8 +29,8 @@
                 android:layout_height="wrap_content"
                 android:text="@{viewModel.allParticipantsString}"
                 android:checked="@={viewModel._isAllParticipants}"
-                android:textSize="15dp"
-                android:layout_marginLeft="5dp"
+                android:textSize="15sp"
+                android:layout_marginStart="5dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -40,7 +40,7 @@
                 android:layout_height="wrap_content"
                 android:text="@{viewModel.allParticipantsMinusOneString}"
                 android:checked="@={viewModel._isAllParticipantsMinusOne}"
-                android:textSize="15dp"
+                android:textSize="15sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@+id/allParticapants"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -51,8 +51,8 @@
                 android:layout_height="wrap_content"
                 android:text="@{viewModel.otherString}"
                 android:checked="@={viewModel._isOther}"
-                android:textSize="15dp"
-                android:layout_marginRight="5dp"
+                android:textSize="15sp"
+                android:layout_marginEnd="5dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 

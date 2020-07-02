@@ -15,13 +15,16 @@ import android.widget.TextView
 import androidx.annotation.NonNull
 import com.example.coplanning.R
 import com.example.coplanning.helpers.DateAndTimeConverter
-import com.example.coplanning.models.GroupedMappingResultsCollection
-import com.example.coplanning.models.MappingResultItem
-import com.example.coplanning.models.MappingResultsByGroups
-import java.util.*
+import com.example.coplanning.models.mapping.MappingResultItem
+import com.example.coplanning.models.mapping.MappingResultsByGroups
 
-class ExpandableMappingIntervalsAdapter(private val context: Context, private val groupsList: List<String>, val mappingResultsCollection: List<MappingResultsByGroups>,
-    val groupLayout: Int, val mappingIntervalLayout: Int) : BaseExpandableListAdapter() {
+class ExpandableMappingIntervalsAdapter(
+    private val context: Context,
+    private val groupsList: List<String>,
+    private val mappingResultsCollection: List<MappingResultsByGroups>,
+    private val groupLayout: Int,
+    private val mappingIntervalLayout: Int
+    ) : BaseExpandableListAdapter() {
 
     override fun getGroupCount(): Int {
         return groupsList.size
@@ -62,7 +65,7 @@ class ExpandableMappingIntervalsAdapter(private val context: Context, private va
             convertView = inflater.inflate(groupLayout, null)
         }
         val groupTitleTv = convertView?.findViewById<TextView>(R.id.groupName)
-        groupTitleTv?.setTypeface(Typeface.defaultFromStyle(Typeface.BOLD))
+        groupTitleTv?.typeface = Typeface.defaultFromStyle(Typeface.BOLD)
         groupTitleTv?.text = groupTitle
         return convertView
     }
@@ -75,12 +78,12 @@ class ExpandableMappingIntervalsAdapter(private val context: Context, private va
                 context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
             convertView = inflater.inflate(mappingIntervalLayout, null)
         }
-        val dateTimeFrom= curMappingResultElement.GetDateTimeFrom()
-        val dateTimeTo = curMappingResultElement.GetDateTimeTo()
-        val dateFrom = dateTimeFrom?.let { DateAndTimeConverter.GetStringDateFromCalendar(it) }
-        val timeFrom = dateTimeFrom?.let { DateAndTimeConverter.GetISOStringTimeFromCalendar(it) }
-        val dateTo = dateTimeTo?.let { DateAndTimeConverter.GetStringDateFromCalendar(it) }
-        val timeTo = dateTimeTo?.let { DateAndTimeConverter.GetISOStringTimeFromCalendar(it) }
+        val dateTimeFrom= curMappingResultElement.dateTimeFrom
+        val dateTimeTo = curMappingResultElement.dateTimeTo
+        val dateFrom = dateTimeFrom.let { DateAndTimeConverter.getStringDateFromCalendar(it) }
+        val timeFrom = dateTimeFrom.let { DateAndTimeConverter.getISOStringTimeFromCalendar(it) }
+        val dateTo = dateTimeTo.let { DateAndTimeConverter.getStringDateFromCalendar(it) }
+        val timeTo = dateTimeTo.let { DateAndTimeConverter.getISOStringTimeFromCalendar(it) }
         val timeFromTv = convertView?.findViewById<TextView>(R.id.timeFrom)
         val timeToTv = convertView?.findViewById<TextView>(R.id.timeTo)
         if (dateFrom == dateTo) {
@@ -90,28 +93,26 @@ class ExpandableMappingIntervalsAdapter(private val context: Context, private va
             timeFromTv?.text = "$dateFrom, $timeFrom"
             timeToTv?.text = "$dateTo, $timeTo"
         }
+
         val usersListTv = convertView?.findViewById<TextView>(R.id.usersList)
-        val users = curMappingResultElement.GetUserList()
+        val users = curMappingResultElement.users
         var usersView = ""
-        if (users != null) {
-            for (user in users) {
-                usersView += "$user "
-            }
+        for (user in users) {
+            usersView += "$user "
         }
+
         val spannableStringBuilder = SpannableStringBuilder(usersView)
-        if (users != null) {
-            for (user in users) {
-                val curSpan: ClickableSpan = object : ClickableSpan() {
-                    override fun onClick(@NonNull widget: View) {}
-                }
-                val indexOfCurUser = usersView.indexOf(user)
-                spannableStringBuilder.setSpan(
-                    curSpan,
-                    indexOfCurUser,
-                    indexOfCurUser + user.length,
-                    Spanned.SPAN_COMPOSING
-                )
+        for (user in users) {
+            val curSpan: ClickableSpan = object : ClickableSpan() {
+                override fun onClick(@NonNull widget: View) {}
             }
+            val indexOfCurUser = usersView.indexOf(user)
+            spannableStringBuilder.setSpan(
+                curSpan,
+                indexOfCurUser,
+                indexOfCurUser + user.length,
+                Spanned.SPAN_COMPOSING
+            )
         }
         usersListTv?.text = spannableStringBuilder
         usersListTv?.movementMethod = LinkMovementMethod.getInstance()

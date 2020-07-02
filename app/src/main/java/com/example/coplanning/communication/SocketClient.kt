@@ -2,16 +2,12 @@ package com.example.coplanning.communication
 
 import android.app.Activity
 import android.app.Application
-import android.util.Log
 import com.example.coplanning.globals.BadgesOperations
 import com.github.nkzawa.emitter.Emitter
-import com.github.nkzawa.engineio.client.Socket
 import com.github.nkzawa.socketio.client.IO
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
-
-import java.net.URISyntaxException
 
 
 class SocketClient(): Application() {
@@ -29,32 +25,25 @@ class SocketClient(): Application() {
         IO.socket("http://10.0.2.2:3000/")
        // IO.socket("https://co-planning.herokuapp.com/")
 
+    private var searchAnswerListener: Emitter.Listener? = null
+    private var savedMappingsListener: Emitter.Listener? = null
+    private var unavailableTimeAnswerListener: Emitter.Listener? = null
+    private var mappingAnswerListener: Emitter.Listener? = null
+    private var userSubscribeListener: Emitter.Listener? = null
+    private var userTaskSubscribeListener: Emitter.Listener? = null
 
+    private var notificationsListener: Emitter.Listener? = null
+    private var fullNotificationsListListener: Emitter.Listener? = null
+    private var currentUser: String? = null
 
-    private var SearchAnswerListener: Emitter.Listener? = null
-    private var SavedMappingsListener: Emitter.Listener? = null
-    private var UnavailableTimeAnswerListener: Emitter.Listener? = null
-    private var MappingAnswerListener: Emitter.Listener? = null
-    private var UserSubscribeListener: Emitter.Listener? = null
-    private var UserTaskSubscribeListener: Emitter.Listener? = null
-
-    private var NotificationsListener: Emitter.Listener? = null
-    private var FullNotificationsListListener: Emitter.Listener? = null
-    private var CurrentUser: String? = null
-
-    private val DefaultNotificationsListener: Emitter.Listener = object : Emitter.Listener {
-        override fun call(vararg args: Any?) {
-            activity!!.runOnUiThread {
-                val sender = args[0] as String?
-                val description = args[1] as String?
-                val notifAmount: Int = badgesOperations?.GetNotificationsAmount()!! + 1
-                badgesOperations?.SetNotificationsAmount(notifAmount)
-            }
+    private val defaultNotificationsListener: Emitter.Listener = Emitter.Listener {
+        activity!!.runOnUiThread {
+            val notifAmount: Int = badgesOperations?.getNotificationsAmount()!! + 1
+            badgesOperations?.setNotificationsAmount(notifAmount)
         }
     }
 
-    private val DefaultFullNotificationsListListener: Emitter.Listener = object : Emitter.Listener {
-        override fun call(vararg args: Any) {
+    private val defaultFullNotificationsListListener: Emitter.Listener = Emitter.Listener { args ->
             activity!!.runOnUiThread {
                 val notifications = args[0] as JSONArray
                 var unreadNotificationsAmount = 0
@@ -67,84 +56,83 @@ class SocketClient(): Application() {
                         e.printStackTrace()
                     }
                 }
-                badgesOperations?.SetNotificationsAmount(unreadNotificationsAmount)
+                badgesOperations?.setNotificationsAmount(unreadNotificationsAmount)
             }
         }
-    }
 
-    fun Connect() {
+    fun connect() {
         mSocket?.connect()
 
     }
 
-    fun Disconnect() {
+    fun disconnect() {
         mSocket?.disconnect()
     }
 
-    fun OffListeners() {
+    fun offListeners() {
         mSocket?.off()
     }
 
-    fun SetSearchAnswerListener(listener: Emitter.Listener?) {
-        SearchAnswerListener = listener
-        mSocket?.on("search", SearchAnswerListener)
+    fun setSearchAnswerListener(listener: Emitter.Listener?) {
+        searchAnswerListener = listener
+        mSocket?.on("search", searchAnswerListener)
     }
 
-    fun Search(text: String?) {
+    fun search(text: String?) {
         mSocket?.emit("search", text)
     }
 
-    fun SetSavedMappingsListener(listener: Emitter.Listener?) {
-        SavedMappingsListener = listener
-        mSocket?.on("getUserSearchesList", SavedMappingsListener)
+    fun setSavedMappingsListener(listener: Emitter.Listener?) {
+        savedMappingsListener = listener
+        mSocket?.on("getUserSearchesList", savedMappingsListener)
     }
 
-    fun GetSavedMappings(username: String?) {
+    fun getSavedMappings(username: String?) {
         mSocket?.emit("getUserSearchesList", username)
     }
 
-    fun GetFullNotificationsList(username: String?) {
+    fun getFullNotificationsList(username: String?) {
         mSocket?.emit("notifications", username)
     }
 
-    fun ChangeNotificationsStatus(
+    fun changeNotificationsStatus(
         username: String?,
         notifications: JSONArray?
     ) {
         mSocket?.emit("changeNotificationStatus", username, notifications)
     }
 
-    fun SetUnavailableTimeAnswer(listener: Emitter.Listener?) {
-        UnavailableTimeAnswerListener = listener
-        mSocket?.on("unavailableTime", UnavailableTimeAnswerListener)
+    fun setUnavailableTimeAnswer(listener: Emitter.Listener?) {
+        unavailableTimeAnswerListener = listener
+        mSocket?.on("unavailableTime", unavailableTimeAnswerListener)
     }
 
-    fun GetUserUnavailableTime(username: String?) {
+    fun getUserUnavailableTime(username: String?) {
         mSocket?.emit("unavailableTime", username)
     }
 
-    fun SetUserUnavailableTime(
+    fun setUserUnavailableTime(
         username: String?,
         unavailableTime: JSONObject?
     ) {
         mSocket?.emit("unavailableTime", username, unavailableTime)
     }
 
-    fun SetMappingAnswerListener(listener: Emitter.Listener?) {
-        MappingAnswerListener = listener
-        mSocket?.on("mapping", MappingAnswerListener)
+    fun setMappingAnswerListener(listener: Emitter.Listener?) {
+        mappingAnswerListener = listener
+        mSocket?.on("mapping", mappingAnswerListener)
     }
 
-    fun GetMappingsResult(data: JSONObject?, username: String?) {
+    fun getMappingsResult(data: JSONObject?, username: String?) {
         mSocket?.emit("mapping", data, username)
     }
 
-    fun SetUserSubscribeListener(listener: Emitter.Listener?) {
-        UserSubscribeListener = listener
-        mSocket?.on("subscribe", UserSubscribeListener)
+    fun setUserSubscribeListener(listener: Emitter.Listener?) {
+        userSubscribeListener = listener
+        mSocket?.on("subscribe", userSubscribeListener)
     }
 
-    fun SubscribeOnUser(
+    fun subscribeOnUser(
         receiver: String?,
         subscriber: String?,
         direction: Boolean?
@@ -152,12 +140,12 @@ class SocketClient(): Application() {
         mSocket?.emit("subscribe", receiver, subscriber, direction)
     }
 
-    fun SetUserTaskSubscribeListener(listener: Emitter.Listener?) {
-        UserTaskSubscribeListener = listener
-        mSocket?.on("subscribe", UserTaskSubscribeListener)
+    fun setUserTaskSubscribeListener(listener: Emitter.Listener?) {
+        userTaskSubscribeListener = listener
+        mSocket?.on("subscribe", userTaskSubscribeListener)
     }
 
-    fun SubscribeOnUserTask(
+    fun subscribeOnUserTask(
         receiver: String?,
         subscriber: String?,
         direction: Boolean?,
@@ -167,33 +155,33 @@ class SocketClient(): Application() {
     }
 
 
-    fun SetNotificationsReceiver(username: String?) {
-        CurrentUser = username
-        mSocket?.on("changes_$CurrentUser", NotificationsListener)
+    fun setNotificationsReceiver(username: String?) {
+        currentUser = username
+        mSocket?.on("changes_$currentUser", notificationsListener)
     }
 
-    fun SetNotificationsListener(listener: Emitter.Listener?) {
+    fun setNotificationsListener(listener: Emitter.Listener?) {
         if (listener == null) {
-            mSocket?.off("changes_$CurrentUser", NotificationsListener)
-            NotificationsListener = DefaultNotificationsListener
-            mSocket?.on("changes_$CurrentUser", NotificationsListener)
+            mSocket?.off("changes_$currentUser", notificationsListener)
+            notificationsListener = defaultNotificationsListener
+            mSocket?.on("changes_$currentUser", notificationsListener)
         } else {
-            mSocket?.off("changes_$CurrentUser", NotificationsListener)
-            NotificationsListener = listener
-            mSocket?.on("changes_$CurrentUser", NotificationsListener)
+            mSocket?.off("changes_$currentUser", notificationsListener)
+            notificationsListener = listener
+            mSocket?.on("changes_$currentUser", notificationsListener)
         }
     }
 
 
-    fun SetFullNotificationsListListener(listener: Emitter.Listener?) {
+    fun setFullNotificationsListListener(listener: Emitter.Listener?) {
         if (listener == null) {
-            mSocket?.off("notifications", FullNotificationsListListener)
-            FullNotificationsListListener = DefaultFullNotificationsListListener
-            mSocket?.on("notifications", FullNotificationsListListener)
+            mSocket?.off("notifications", fullNotificationsListListener)
+            fullNotificationsListListener = defaultFullNotificationsListListener
+            mSocket?.on("notifications", fullNotificationsListListener)
         } else {
-            mSocket?.off("notifications", FullNotificationsListListener)
-            FullNotificationsListListener = listener
-            mSocket?.on("notifications", FullNotificationsListListener)
+            mSocket?.off("notifications", fullNotificationsListListener)
+            fullNotificationsListListener = listener
+            mSocket?.on("notifications", fullNotificationsListListener)
         }
     }
 }

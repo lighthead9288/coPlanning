@@ -2,7 +2,6 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/customunavailableintervalshape">
@@ -13,7 +12,7 @@
         android:layout_width="52dp"
         android:layout_height="22dp"
         android:layout_marginTop="12dp"
-        android:text="From"
+        android:text="@string/from"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -22,14 +21,12 @@
         style="@style/TextViewParamValue"
         android:layout_width="144dp"
         android:layout_height="0dp"
-        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
         android:layout_marginStart="4dp"
-        android:layout_marginLeft="4dp"
         android:layout_marginTop="8dp"
         android:background="@drawable/datetimeshape"
-        android:onClick="setCustomUnavailableDateFrom"
-        android:paddingRight="50dp"
-        android:text="Set date"
+        android:paddingEnd="50dp"
+        android:text="@string/set_date"
         app:layout_constraintStart_toEndOf="@+id/textView"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -39,13 +36,11 @@
         android:layout_width="134dp"
         android:layout_height="31dp"
         android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
         android:layout_marginTop="8dp"
-        android:layout_toRightOf="@id/customUnavailableDateFrom"
+        android:layout_toEndOf="@id/customUnavailableDateFrom"
         android:background="@drawable/datetimeshape"
-        android:onClick="setCustomUnavailableTimeFrom"
-        android:paddingRight="50dp"
-        android:text="Set time"
+        android:paddingEnd="50dp"
+        android:text="@string/set_time"
         app:layout_constraintStart_toEndOf="@+id/customUnavailableDateFrom"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -55,7 +50,7 @@
         android:layout_width="52dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="To"
+        android:text="@string/to"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView" />
 
@@ -63,13 +58,11 @@
         android:id="@+id/customUnavailableDateTo"
         android:layout_width="145dp"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
         android:layout_marginStart="4dp"
-        android:layout_marginLeft="4dp"
         android:layout_marginTop="8dp"
-        android:onClick="setCustomUnavailableDateTo"
-        android:paddingRight="50dp"
-        android:text="Set date"
+        android:paddingEnd="50dp"
+        android:text="@string/set_date"
         style="@style/TextViewParamValue"
         android:background="@drawable/datetimeshape"
         app:layout_constraintStart_toEndOf="@+id/textView2"
@@ -81,13 +74,11 @@
         android:layout_width="133dp"
         android:layout_height="32dp"
         android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
         android:layout_marginTop="8dp"
-        android:layout_toRightOf="@id/customUnavailableDateTo"
+        android:layout_toEndOf="@id/customUnavailableDateTo"
         android:background="@drawable/datetimeshape"
-        android:onClick="setCustomUnavailableTimeTo"
-        android:paddingRight="50dp"
-        android:text="Set time"
+        android:paddingEnd="50dp"
+        android:text="@string/set_time"
         app:layout_constraintStart_toEndOf="@+id/customUnavailableDateTo"
         app:layout_constraintTop_toBottomOf="@+id/customUnavailableTimeFrom" />
 
@@ -109,10 +100,9 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/customUnavailableDateTo"
-        android:text="Delete"
+        android:text="@string/delete"
         android:textStyle="bold"
         android:textColor="@color/colorDarkGreen"/>
 

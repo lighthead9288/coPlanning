@@ -8,4 +8,7 @@
     <color name="colorDarkGrey">#424242</color>
     <color name="colorDarkGreen">#088A4B</color>
     <color name="colorRed">#f54327</color>
+    <color name="colorDarkRed">#a61b03</color>
+    <color name="colorLightRed">#FF5733</color>
+    <color name="colorLightGrey">#cccccc</color>
 </resources>

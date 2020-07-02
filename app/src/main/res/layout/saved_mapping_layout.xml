@@ -3,7 +3,7 @@
     <data>
         <variable
             name="savedMapping"
-            type="com.example.coplanning.models.SavedMapping" />
+            type="com.example.coplanning.models.mapping.SavedMapping" />
         <variable
             name="dateTimeFrom"
             type="String" />
@@ -20,7 +20,6 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/savedmappingresultshape"
@@ -32,9 +31,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:layout_marginLeft="16dp"
             android:layout_marginTop="16dp"
-            android:textSize="12dp"
+            android:textSize="12sp"
             android:textStyle="bold"
             android:text="@{dateTimeFrom}"
             app:layout_constraintStart_toStartOf="parent"
@@ -45,7 +43,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="28dp"
-            android:textSize="12dp"
+            android:textSize="12sp"
             android:textStyle="bold"
             android:text="@{dateTimeTo}"
             app:layout_constraintStart_toStartOf="@+id/dateTimeFromTv"
@@ -57,7 +55,6 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="48dp"
-            android:layout_marginRight="48dp"
             android:text="@{participantsList}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/dateTimeFromTv" />

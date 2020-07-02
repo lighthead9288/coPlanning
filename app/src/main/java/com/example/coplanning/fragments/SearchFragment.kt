@@ -1,5 +1,6 @@
 package com.example.coplanning.fragments
 
+import android.app.Application
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -14,7 +15,6 @@ import com.example.coplanning.adapters.AddUserToMappingClickListener
 import com.example.coplanning.adapters.OpenUserClickListener
 import com.example.coplanning.adapters.SubscribeOnUserClickListener
 import com.example.coplanning.adapters.UsersAdapter
-import com.example.coplanning.communication.SocketClient
 import com.example.coplanning.databinding.FragmentSearchBinding
 import com.example.coplanning.globals.FragmentOperations
 import com.example.coplanning.globals.ScreensDataStorage
@@ -30,16 +30,14 @@ private const val ARG_PARAM2 = "param2"
  * Use the [SearchFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class SearchFragment : Fragment() {
+class SearchFragment : Fragment(), InitViewModel {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
-
+    private lateinit var binding: FragmentSearchBinding
     private lateinit var viewModel: SearchViewModel
     private lateinit var fragmentOperations: FragmentOperations
-
-    private var socketClient: SocketClient = SocketClient()
-
+    private lateinit var usersAdapter: UsersAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,68 +45,81 @@ class SearchFragment : Fragment() {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
         }
-
         val application = requireNotNull(this.activity).application
-
-
-        if (ScreensDataStorage.curSearchScreenData!=null) {
-            val data = ScreensDataStorage.curSearchScreenData as SearchFragment
-            viewModel = data.viewModel
-        }
-
-        else {
-            viewModel = SearchViewModel(application)
-            ScreensDataStorage.curSearchScreenData = this
-
-        }
+        initViewModel(application)
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        initFragmentOperations()
+        initBinding(inflater, container)
+        initObservables()
 
-        fragmentOperations = FragmentOperations(fragmentManager)
-        val binding = DataBindingUtil.inflate<FragmentSearchBinding>(inflater, R.layout.fragment_search, container, false)
+        return binding.root
+    }
+
+    private fun initObservables() {
+        viewModel.usersList.observe(viewLifecycleOwner, Observer {
+            usersAdapter.submitList(it)
+        })
+    }
+
+    private fun initBinding(inflater: LayoutInflater, container: ViewGroup?) {
+        binding = DataBindingUtil.inflate(
+            inflater,
+            R.layout.fragment_search,
+            container,
+            false
+        )
         binding.viewModel = viewModel
-
         binding.usersSv.setOnQueryTextListener(object: SearchView.OnQueryTextListener, androidx.appcompat.widget.SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String): Boolean {
-                viewModel.SearchCommand(query)
+                viewModel.searchCommand(query)
                 return false
             }
 
             override fun onQueryTextChange(newText: String): Boolean {
-                viewModel.SearchCommand(newText)
+                viewModel.searchCommand(newText)
                 return false
             }
         })
 
-        val adapter = UsersAdapter(OpenUserClickListener {
+        usersAdapter = UsersAdapter(OpenUserClickListener {
             val scheduleFragment = UserScheduleFragment()
             val arguments = Bundle()
             arguments.putSerializable("username", it.username)
             scheduleFragment.arguments = arguments
             ScreensDataStorage.curSearchScreenData = null
-            fragmentOperations.LoadFragment(scheduleFragment)
+            fragmentOperations.loadFragment(scheduleFragment)
         },
             SubscribeOnUserClickListener {user, direction, listener ->
-            viewModel.Subscribe(user, direction, listener)
-        },
+                viewModel.subscribe(user, direction, listener)
+            },
             AddUserToMappingClickListener { user, listener ->
-            viewModel.AddUserToMapping(user.username, listener)
-        },
-            viewModel.GetCurUserName().toString())
+                viewModel.addUserToMapping(user.username, listener)
+            },
+            viewModel.getCurUserName().toString())
 
-        binding.usersRv.adapter = adapter
-
-        viewModel.usersList.observe(viewLifecycleOwner, Observer {
-            adapter.submitList(it)
-        })
-
+        binding.usersRv.adapter = usersAdapter
         binding.lifecycleOwner = this
+    }
 
-        return binding.root
+    private fun initFragmentOperations() {
+        fragmentOperations = FragmentOperations(fragmentManager)
+    }
+
+    override fun initViewModel(application: Application) {
+        if (ScreensDataStorage.curSearchScreenData!=null) {
+            val data = ScreensDataStorage.curSearchScreenData as SearchFragment
+            viewModel = data.viewModel
+        }
+        else {
+            viewModel = SearchViewModel(application)
+            ScreensDataStorage.curSearchScreenData = this
+        }
     }
 
     companion object {

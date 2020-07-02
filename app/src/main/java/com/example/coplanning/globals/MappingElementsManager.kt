@@ -4,23 +4,20 @@ import android.app.Application
 import java.util.*
 
 class MappingElementsManager : Application() {
-    fun GetMappingElements(): ArrayList<String> {
+
+    fun getMappingElements(): ArrayList<String> {
         return MappingElements
     }
 
-    fun SetMappingsElements(elements: ArrayList<String>) {
-        MappingElements = elements
-    }
-
-    fun AddMappingElement(element: String) {
+    fun addMappingElement(element: String) {
         MappingElements.add(element)
     }
 
-    fun RemoveMappingElement(element: String) {
+    fun removeMappingElement(element: String) {
         MappingElements.remove(element)
     }
 
-    fun ClearMappingElements() {
+    fun clearMappingElements() {
         MappingElements.clear()
     }
 

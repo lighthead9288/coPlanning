@@ -28,6 +28,7 @@ class RegisterFragment : Fragment() {
     private var param1: String? = null
     private var param2: String? = null
 
+    private lateinit var binding: FragmentRegisterBinding
     private lateinit var viewModel: RegisterViewModel
     private lateinit var fragmentOperations: FragmentOperations
     private var menuOperations = MenuOperations()
@@ -41,26 +42,40 @@ class RegisterFragment : Fragment() {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
-        val binding: FragmentRegisterBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_register, container, false)
-        val application = requireNotNull(this.activity).application
-
-        fragmentOperations = FragmentOperations(fragmentManager)
-
-        viewModel = RegisterViewModel(application) {
-            menuOperations.ShowBottomNavigationView()
-          //  fragmentOperations.LoadFragment(ScheduleFragment())
-            fragmentOperations.LoadFragment(ProfileFragment())
-        }
-        binding.viewModel = viewModel
-
-        binding.lifecycleOwner = this
-
+        initFragmentOperations()
+        initViewModel()
+        initBinding(inflater, container)
         // Inflate the layout for this fragment
         return binding.root
+    }
+
+    private fun initFragmentOperations() {
+        fragmentOperations = FragmentOperations(fragmentManager)
+    }
+
+    private fun initBinding(inflater: LayoutInflater, container: ViewGroup?) {
+        val binding: FragmentRegisterBinding = DataBindingUtil.inflate(
+            inflater,
+            R.layout.fragment_register,
+            container,
+            false
+        )
+        binding.viewModel = viewModel
+        binding.lifecycleOwner = this
+    }
+
+    private fun initViewModel() {
+        val application = requireNotNull(this.activity).application
+
+        viewModel = RegisterViewModel(application) {
+            menuOperations.showBottomNavigationView()
+            //  fragmentOperations.LoadFragment(ScheduleFragment())
+            fragmentOperations.loadFragment(ProfileFragment())
+        }
     }
 
     companion object {

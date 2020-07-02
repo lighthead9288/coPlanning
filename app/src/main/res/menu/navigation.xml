@@ -3,21 +3,21 @@
     <item
         android:id="@+id/mySchedule"
         android:icon="@drawable/myschedule_128"
-        android:title="My schedule" />
+        android:title="@string/my_schedule" />
     <item
         android:id="@+id/search"
         android:icon="@drawable/search_128"
-        android:title="Search" />
+        android:title="@string/search" />
     <item
         android:id="@+id/mappings"
         android:icon="@drawable/mappings_128"
-        android:title="Mappings" />
+        android:title="@string/mappings" />
     <item
         android:id="@+id/notifications"
         android:icon="@drawable/notifications_128"
-        android:title="Notifications" />
+        android:title="@string/notifications" />
     <item
         android:id="@+id/profile"
         android:icon="@drawable/settings_128"
-        android:title="Settings" />
+        android:title="@string/settings" />
 </menu>

@@ -6,24 +6,23 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 
 open class MenuOperations: Application() {
 
-    companion object {
-        var menu: BottomNavigationView? = null
-    }
-
-    fun SetMenu(bnv: BottomNavigationView?) {
+    fun setMenu(bnv: BottomNavigationView?) {
         menu = bnv
-        
     }
 
-    fun ShowBottomNavigationView() {
+    fun showBottomNavigationView() {
         if (menu != null) {
             menu?.visibility = View.VISIBLE
         }
     }
 
-    fun HideBottomNavigationView() {
+    fun hideBottomNavigationView() {
         if (menu!= null) {
             menu?.visibility = View.GONE
         }
+    }
+
+    companion object {
+        var menu: BottomNavigationView? = null
     }
 }

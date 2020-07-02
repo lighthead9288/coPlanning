@@ -9,7 +9,7 @@ import com.example.coplanning.globals.BadgesOperations
 import com.example.coplanning.globals.MappingElementsManager
 import com.example.coplanning.globals.SharedPreferencesOperations
 import com.example.coplanning.helpers.DateAndTimeConverter
-import com.example.coplanning.models.SavedMapping
+import com.example.coplanning.models.mapping.SavedMapping
 import com.github.nkzawa.emitter.Emitter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -34,44 +34,44 @@ class MappingsViewModel(val application: Application): ViewModel() {
 
     private val mappingElementsManager: MappingElementsManager = MappingElementsManager()
 
-    val _dateFromString = MutableLiveData<String>()
+    private val _dateFromString = MutableLiveData<String>()
     val dateFromString: LiveData<String>
         get() = _dateFromString
 
-    val _timeFromString = MutableLiveData<String>()
+    private val _timeFromString = MutableLiveData<String>()
     val timeFromString: LiveData<String>
         get() = _timeFromString
 
-    val _dateToString = MutableLiveData<String>()
+    private val _dateToString = MutableLiveData<String>()
     val dateToString: LiveData<String>
         get() = _dateToString
 
-    val _timeToString = MutableLiveData<String>()
+    private val _timeToString = MutableLiveData<String>()
     val timeToString: LiveData<String>
         get() = _timeToString
 
-    val _mappingPanelVisible = MutableLiveData<Boolean>()
+    private val _mappingPanelVisible = MutableLiveData<Boolean>()
     val mappingPanelVisible: LiveData<Boolean>
         get() = _mappingPanelVisible
 
-    val _mappingParticipants = MutableLiveData<List<String>>()
+    private val _mappingParticipants = MutableLiveData<List<String>>()
     val mappingParticipants: LiveData<List<String>>
         get() = _mappingParticipants
 
-    val _savedMappings = MutableLiveData<List<SavedMapping>>()
+    private val _savedMappings = MutableLiveData<List<SavedMapping>>()
     val savedMappings: LiveData<List<SavedMapping>>
         get() = _savedMappings
 
 
-    var dateAndTimeFrom = Calendar.getInstance()
-    var dateAndTimeTo = Calendar.getInstance()
+    var dateAndTimeFrom: Calendar = Calendar.getInstance()
+    var dateAndTimeTo: Calendar = Calendar.getInstance()
 
     private val onSearchesAnswer = Emitter.Listener { args ->
         uiScope.launch {
             val data = args[0] as JSONArray
 
             val savedMappingsResults: ArrayList<SavedMapping> =
-                ArrayList<SavedMapping>()
+                ArrayList()
 
             for (i in 0 until data.length()) {
                 var jsonobject: JSONObject
@@ -79,10 +79,10 @@ class MappingsViewModel(val application: Application): ViewModel() {
                     jsonobject = data.getJSONObject(i)
                     val from = jsonobject.getString("dateTimeFrom")
                     val dtFrom: Calendar =
-                        DateAndTimeConverter.GetCalendarDateTimeFromISOString(from)
+                        DateAndTimeConverter.getCalendarDateTimeFromISOString(from)
                     val to = jsonobject.getString("dateTimeTo")
                     val dtTo: Calendar =
-                        DateAndTimeConverter.GetCalendarDateTimeFromISOString(to)
+                        DateAndTimeConverter.getCalendarDateTimeFromISOString(to)
                     val array = jsonobject.getJSONArray("participantsList")
                     val size = array.length()
                     val patricipants =
@@ -91,7 +91,13 @@ class MappingsViewModel(val application: Application): ViewModel() {
                         val participant = array[j] as String
                         patricipants.add(participant)
                     }
-                    savedMappingsResults.add(SavedMapping(dtFrom, dtTo, patricipants))
+                    savedMappingsResults.add(
+                        SavedMapping(
+                            dtFrom,
+                            dtTo,
+                            patricipants
+                        )
+                    )
                 } catch (e: JSONException) {
                     e.printStackTrace()
                 }
@@ -105,21 +111,21 @@ class MappingsViewModel(val application: Application): ViewModel() {
 
     init {
 
-        InitDates()
-        UpdateMappingPanelState()
+        initDates()
+        updateMappingPanelState()
 
-        socketClient.SetSavedMappingsListener(onSearchesAnswer)
-        GetSavedMappings()
+        socketClient.setSavedMappingsListener(onSearchesAnswer)
+        getSavedMappings()
 
     }
 
-    fun GetJSONMappingData(): JSONObject {
-        val isoMapDateFrom = DateAndTimeConverter.ConvertStringDateToISO(_dateFromString.value.toString())
-        val isoMapTimeFrom = DateAndTimeConverter.ConvertStringTimeToISO(_timeFromString.value.toString())
-        val isoMapDateTo = DateAndTimeConverter.ConvertStringDateToISO(_dateToString.value.toString())
-        val isoMapTimeTo = DateAndTimeConverter.ConvertStringTimeToISO(_timeToString.value.toString())
+    fun getJSONMappingData(): JSONObject {
+        val isoMapDateFrom = DateAndTimeConverter.convertStringDateToISO(_dateFromString.value.toString())
+        val isoMapTimeFrom = DateAndTimeConverter.convertStringTimeToISO(_timeFromString.value.toString())
+        val isoMapDateTo = DateAndTimeConverter.convertStringDateToISO(_dateToString.value.toString())
+        val isoMapTimeTo = DateAndTimeConverter.convertStringTimeToISO(_timeToString.value.toString())
 
-        val mappingElements = mappingElementsManager.GetMappingElements()
+        val mappingElements = mappingElementsManager.getMappingElements()
         val jsonMappingElements = JSONArray()
         for (mElement in mappingElements) {
             jsonMappingElements.put(mElement)
@@ -139,78 +145,78 @@ class MappingsViewModel(val application: Application): ViewModel() {
         return jsonMappingData
     }
 
-    fun InitDates() {
-        SetDateFromCommand(dateAndTimeFrom[Calendar.YEAR], dateAndTimeFrom[Calendar.MONTH], dateAndTimeFrom[Calendar.DAY_OF_MONTH])
-        SetTimeFromCommand(dateAndTimeFrom[Calendar.HOUR_OF_DAY], dateAndTimeFrom[Calendar.MINUTE])
-        SetDateToCommand(dateAndTimeTo[Calendar.YEAR], dateAndTimeTo[Calendar.MONTH], dateAndTimeTo[Calendar.DAY_OF_MONTH])
-        SetTimeToCommand(dateAndTimeTo[Calendar.HOUR_OF_DAY], dateAndTimeTo[Calendar.MINUTE])
+    private fun initDates() {
+        setDateFromCommand(dateAndTimeFrom[Calendar.YEAR], dateAndTimeFrom[Calendar.MONTH], dateAndTimeFrom[Calendar.DAY_OF_MONTH])
+        setTimeFromCommand(dateAndTimeFrom[Calendar.HOUR_OF_DAY], dateAndTimeFrom[Calendar.MINUTE])
+        setDateToCommand(dateAndTimeTo[Calendar.YEAR], dateAndTimeTo[Calendar.MONTH], dateAndTimeTo[Calendar.DAY_OF_MONTH])
+        setTimeToCommand(dateAndTimeTo[Calendar.HOUR_OF_DAY], dateAndTimeTo[Calendar.MINUTE])
     }
 
-    fun SetMappingParameters(mapping: SavedMapping) {
-        dateAndTimeFrom = mapping.GetDateTimeFrom().clone() as Calendar?
-        dateAndTimeTo = mapping.GetDateTimeTo().clone() as Calendar?
-        InitDates()
+    fun setMappingParameters(mapping: SavedMapping) {
+        dateAndTimeFrom = mapping.dateTimeFrom.clone() as Calendar
+        dateAndTimeTo = mapping.dateTimeTo.clone() as Calendar
+        initDates()
 
-        mappingElementsManager.ClearMappingElements()
-        mapping.GetParticipants().forEach {
-            mappingElementsManager.AddMappingElement(it)
+        mappingElementsManager.clearMappingElements()
+        mapping.participants.forEach {
+            mappingElementsManager.addMappingElement(it)
         }
-        UpdateBadges()
-        UpdateMappingPanelState()
+        updateBadges()
+        updateMappingPanelState()
     }
 
-    fun UpdateBadges() {
-        val curMappingElements = mappingElementsManager.GetMappingElements()
+    private fun updateBadges() {
+        val curMappingElements = mappingElementsManager.getMappingElements()
         if (curMappingElements.count()==0)
-            badgesOperations.ClearMappingsAmount()
+            badgesOperations.clearMappingsAmount()
         else
-            badgesOperations.SetMappingsAmount(curMappingElements.count())
+            badgesOperations.setMappingsAmount(curMappingElements.count())
     }
 
-    fun RemoveUserFromMapping(username: String) {
-        val curMappingElements = mappingElementsManager.GetMappingElements()
+    fun removeUserFromMapping(username: String) {
+        val curMappingElements = mappingElementsManager.getMappingElements()
         if (curMappingElements.contains(username))
-            mappingElementsManager.RemoveMappingElement(username)
+            mappingElementsManager.removeMappingElement(username)
 
-        UpdateBadges()
-        UpdateMappingPanelState()
+        updateBadges()
+        updateMappingPanelState()
     }
 
-    fun UpdateMappingPanelState() {
-        val participants = mappingElementsManager.GetMappingElements()
+    fun updateMappingPanelState() {
+        val participants = mappingElementsManager.getMappingElements()
         _mappingParticipants.value = participants
         _mappingPanelVisible.value = participants.count()>1
     }
 
-    fun SetDateFromCommand(year: Int, month: Int, date: Int) {
+    fun setDateFromCommand(year: Int, month: Int, date: Int) {
         val dispMonth = month + 1
         dateAndTimeFrom[year, month] = date
-        _dateFromString.value = DateAndTimeConverter.ConvertToStringDate(year, dispMonth, date)
+        _dateFromString.value = DateAndTimeConverter.convertToStringDate(year, dispMonth, date)
     }
 
-    fun SetTimeFromCommand(hours: Int, minutes: Int) {
+    fun setTimeFromCommand(hours: Int, minutes: Int) {
         dateAndTimeFrom[Calendar.HOUR_OF_DAY] = hours
         dateAndTimeFrom[Calendar.MINUTE] = minutes
-        _timeFromString.value = DateAndTimeConverter.ConvertToStringTime(hours, minutes)
+        _timeFromString.value = DateAndTimeConverter.convertToStringTime(hours, minutes)
     }
 
-    fun SetDateToCommand(year: Int, month: Int, date: Int) {
+    fun setDateToCommand(year: Int, month: Int, date: Int) {
         val dispMonth = month + 1
         dateAndTimeTo[year, month] = date
-        _dateToString.value = DateAndTimeConverter.ConvertToStringDate(year, dispMonth, date)
+        _dateToString.value = DateAndTimeConverter.convertToStringDate(year, dispMonth, date)
     }
 
-    fun SetTimeToCommand(hours: Int, minutes: Int) {
+    fun setTimeToCommand(hours: Int, minutes: Int) {
         dateAndTimeTo[Calendar.HOUR_OF_DAY] = hours
         dateAndTimeTo[Calendar.MINUTE] = minutes
-        _timeToString.value = DateAndTimeConverter.ConvertToStringTime(hours, minutes)
+        _timeToString.value = DateAndTimeConverter.convertToStringTime(hours, minutes)
     }
 
-    fun GetCurUserName(): String? { return sharedPrefs.login}
+    private fun getCurUserName(): String? { return sharedPrefs.login}
 
-    fun GetSavedMappings() {
-        val username = GetCurUserName()
-        socketClient.GetSavedMappings(username)
+    private fun getSavedMappings() {
+        val username = getCurUserName()
+        socketClient.getSavedMappings(username)
     }
 
 

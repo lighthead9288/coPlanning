@@ -1,6 +1,4 @@
-package com.example.coplanning.models
-
-import java.util.*
+package com.example.coplanning.models.mapping
 
 data class GroupedMappingResultsCollection(val groupedMappingResults: List<MappingResultsByGroups>)
 

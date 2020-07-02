@@ -6,8 +6,8 @@ import androidx.lifecycle.MutableLiveData
 import com.example.coplanning.communication.SocketClient
 import com.example.coplanning.globals.BadgesOperations
 import com.example.coplanning.globals.SharedPreferencesOperations
-import com.example.coplanning.models.Notification
-import com.example.coplanning.models.NotificationChanges
+import com.example.coplanning.models.notification.Notification
+import com.example.coplanning.models.notification.NotificationChanges
 import com.github.nkzawa.emitter.Emitter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -29,7 +29,7 @@ class NotificationsViewModel(val application: Application) {
 
     private val badgesOperations: BadgesOperations = BadgesOperations()
 
-    val _notifications = MutableLiveData<MutableList<Notification>>()
+    private val _notifications = MutableLiveData<MutableList<Notification>>()
     val notifications: LiveData<MutableList<Notification>>
         get() = _notifications
 
@@ -41,9 +41,9 @@ class NotificationsViewModel(val application: Application) {
             val additionalInfo = args[3] as JSONObject
 
             val notificationChanges =
-                GetNotificationAdditionalInfoFromJSONObject(additionalInfo)
+                getNotificationAdditionalInfoFromJSONObject(additionalInfo)
 
-            val username = GetCurUserName()
+            val username = setCurUserName()
 
             val jsonNotification = JSONObject()
             try {
@@ -52,15 +52,19 @@ class NotificationsViewModel(val application: Application) {
                 jsonNotification.put("sender", sender)
                 jsonNotification.put("description", description)
                 jsonNotification.put("status", false)
-                NotifyAboutReadNotifications(JSONArray().put(jsonNotification))
+                notifyAboutReadNotifications(JSONArray().put(jsonNotification))
             } catch (e: JSONException) {
                 e.printStackTrace()
             }
 
             val newNotification =
-                Notification(dateTime, sender, description, false, notificationChanges!!)
-           /* notificationsList.add(0, newNotification)
-            UpdateNotificationsList()*/
+                Notification(
+                    dateTime,
+                    sender,
+                    description,
+                    false,
+                    notificationChanges!!
+                )
             _notifications.value?.add(0, newNotification)
 
         }
@@ -85,7 +89,7 @@ class NotificationsViewModel(val application: Application) {
                     val additionalInfo =
                         notification.getJSONObject("additionalInfo")
                     val notificationChanges =
-                        GetNotificationAdditionalInfoFromJSONObject(additionalInfo)
+                        getNotificationAdditionalInfoFromJSONObject(additionalInfo)
                     notificationsList.add(
                         Notification(
                             dateTime,
@@ -102,61 +106,45 @@ class NotificationsViewModel(val application: Application) {
 
             _notifications.value = notificationsList
 
-            NotifyAboutReadNotifications(unreadNotifications)
+            notifyAboutReadNotifications(unreadNotifications)
         }
     }
 
 
 
-    private fun GetNotificationAdditionalInfoFromJSONObject(additionalInfo: JSONObject): NotificationChanges? {
-        val notificationChanges = NotificationChanges()
-        var nameChanges: String? = null
-        try {
-            nameChanges = additionalInfo.getString("name")
-            notificationChanges.SetName(nameChanges)
-        } catch (e: JSONException) {
-            e.printStackTrace()
-        }
-        var commentChanges: String? = null
-        try {
-            commentChanges = additionalInfo.getString("comment")
-            notificationChanges.SetComment(commentChanges)
-        } catch (e: JSONException) {
-            e.printStackTrace()
-        }
-        var dateTimeFromChanges: String? = null
-        try {
-            dateTimeFromChanges = additionalInfo.getString("dateTimeFrom")
-            notificationChanges.SetDateTimeFrom(dateTimeFromChanges)
-        } catch (e: JSONException) {
-            e.printStackTrace()
-        }
-        var dateTimeToChanges: String? = null
-        try {
-            dateTimeToChanges = additionalInfo.getString("dateTimeTo")
-            notificationChanges.SetDateTimeTo(dateTimeToChanges)
-        } catch (e: JSONException) {
-            e.printStackTrace()
-        }
+    private fun getNotificationAdditionalInfoFromJSONObject(additionalInfo: JSONObject): NotificationChanges? {
+        var nameChanges: String? = additionalInfo.getString("name")
+        var commentChanges: String? = additionalInfo.getString("comment")
+        var dateTimeFromChanges: String? = additionalInfo.getString("dateTimeFrom")
+        var dateTimeToChanges: String? = additionalInfo.getString("dateTimeTo")
+
+        val notificationChanges =
+            NotificationChanges(
+                nameChanges.toString(),
+                commentChanges.toString(),
+                dateTimeFromChanges.toString(),
+                dateTimeToChanges.toString()
+            )
+
         return notificationChanges
     }
 
-    private fun NotifyAboutReadNotifications(notifications: JSONArray) {
-        val username = GetCurUserName()
-        socketClient.ChangeNotificationsStatus(username, notifications)
+    private fun notifyAboutReadNotifications(notifications: JSONArray) {
+        val username = setCurUserName()
+        socketClient.changeNotificationsStatus(username, notifications)
     }
 
-    fun GetCurUserName(): String? { return sharedPrefs.login}
+    private fun setCurUserName(): String? { return sharedPrefs.login}
 
     init {
-        val username = GetCurUserName()
+        val username = setCurUserName()
 
-        badgesOperations.ClearNotificationsAmount()
+        badgesOperations.clearNotificationsAmount()
 
-        socketClient.SetNotificationsListener(onGetNotifications)
+        socketClient.setNotificationsListener(onGetNotifications)
 
-        socketClient.SetFullNotificationsListListener(onGetFullNotificationsList)
-        socketClient.GetFullNotificationsList(username)
+        socketClient.setFullNotificationsListListener(onGetFullNotificationsList)
+        socketClient.getFullNotificationsList(username)
     }
 
 

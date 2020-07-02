@@ -20,7 +20,7 @@ class BadgesOperations {
         private var notificationText: TextView? = null
     }
 
-    fun Init(view: BottomNavigationView?, context: Context?) {
+    fun init(view: BottomNavigationView?, context: Context?) {
         navigation = view
         MainActivityContext = context
         val bottomNavigationMenuView: BottomNavigationMenuView =
@@ -30,7 +30,7 @@ class BadgesOperations {
         mappingBadge = LayoutInflater.from(MainActivityContext)
             .inflate(R.layout.notification_badge, mappingItemView, true)
         mappingText = mappingBadge!!.findViewById(R.id.notifications_badge)
-        mappingText?.setVisibility(View.GONE)
+        mappingText?.visibility = View.GONE
         val notificationItemView: BottomNavigationItemView =
             bottomNavigationMenuView.getChildAt(3) as BottomNavigationItemView
         notificationBadge = LayoutInflater.from(MainActivityContext)
@@ -40,7 +40,7 @@ class BadgesOperations {
     }
 
 
-    fun SetMappingsAmount(amount: Int) {
+    fun setMappingsAmount(amount: Int) {
         if (amount == 0)
             mappingText!!.visibility = View.GONE
         else
@@ -48,13 +48,13 @@ class BadgesOperations {
         mappingText!!.text = amount.toString()
     }
 
-    fun ClearMappingsAmount() {
+    fun clearMappingsAmount() {
         mappingText = mappingBadge!!.findViewById(R.id.notifications_badge)
-        mappingText?.setText("0")
-        mappingText?.setVisibility(View.GONE)
+        mappingText?.text = "0"
+        mappingText?.visibility = View.GONE
     }
 
-    fun SetNotificationsAmount(amount: Int) {
+    fun setNotificationsAmount(amount: Int) {
         if (amount == 0)
             notificationText!!.visibility = View.GONE
         else
@@ -62,13 +62,13 @@ class BadgesOperations {
         notificationText!!.text = amount.toString()
     }
 
-    fun ClearNotificationsAmount() {
+    fun clearNotificationsAmount() {
         notificationText = notificationBadge!!.findViewById(R.id.notifications_badge)
-        notificationText?.setText("0")
-        notificationText?.setVisibility(View.GONE)
+        notificationText?.text = "0"
+        notificationText?.visibility = View.GONE
     }
 
-    fun GetNotificationsAmount(): Int {
+    fun getNotificationsAmount(): Int {
         val str = notificationText!!.text.toString()
         return if (str == "") 0 else Integer.valueOf(notificationText!!.text.toString())
     }

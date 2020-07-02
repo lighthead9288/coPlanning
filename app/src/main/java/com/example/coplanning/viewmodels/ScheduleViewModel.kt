@@ -7,22 +7,17 @@ import androidx.lifecycle.ViewModel
 import com.example.coplanning.communication.SocketClient
 import com.example.coplanning.globals.SharedPreferencesOperations
 import com.example.coplanning.helpers.DateAndTimeConverter
-import com.example.coplanning.models.*
+import com.example.coplanning.models.task.*
 import com.github.nkzawa.emitter.Emitter
-import com.google.gson.Gson
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
+
 import org.json.JSONObject
 import java.util.*
 
-class ScheduleViewModel(val application: Application, val username: String): ViewModel(), ITaskListOperations {
+class ScheduleViewModel(val application: Application, val username: String)
+    : ViewModel(),
+    ITaskListOperations {
 
     private val sharedPrefs = SharedPreferencesOperations(application)
-
-    private var viewModelJob = Job()
-
-    private val uiScope = CoroutineScope(Dispatchers.Main + viewModelJob)
 
     val _dateAndTimeFromString = MutableLiveData<String>()
     val dateAndTimeFromString: LiveData<String>
@@ -44,7 +39,6 @@ class ScheduleViewModel(val application: Application, val username: String): Vie
     val isInterval: LiveData<Boolean>
         get() = _isInterval
 
-
     val _isCalendar = MutableLiveData<Boolean>()
     val isCalendar: LiveData<Boolean>
         get() = _isCalendar
@@ -52,7 +46,6 @@ class ScheduleViewModel(val application: Application, val username: String): Vie
     val _isParams = MutableLiveData<Boolean>()
     val isParams: LiveData<Boolean>
         get() = _isParams
-
 
     val _groupedTaskList = MutableLiveData<GroupedTasksCollection>()
     val groupedTaskList: LiveData<GroupedTasksCollection>
@@ -62,47 +55,44 @@ class ScheduleViewModel(val application: Application, val username: String): Vie
     val isMe: LiveData<Boolean>
         get() = _isMe
 
-    val dateAndTimeFrom = Calendar.getInstance()
-    val dateAndTimeTo = Calendar.getInstance()
+    val dateAndTimeFrom: Calendar = Calendar.getInstance()
+    val dateAndTimeTo: Calendar = Calendar.getInstance()
 
-
-    private val serverTaskManager: ServerTaskManager = ServerTaskManager(this)
-
+    private val serverTaskManager: ServerTaskManager =
+        ServerTaskManager(this)
     private val socketClient: SocketClient = SocketClient()
 
-
-
     init {
-        _isMe.value = IsMe()
-        SetIntervalCommand()
-        HideCalendarAndParams()
+        _isMe.value = isMe()
+        setIntervalCommand()
+        hideCalendarAndParams()
     }
 
-    fun IsMe(): Boolean {
-        return GetCurUser()==username
+    private fun isMe(): Boolean {
+        return getCurUser()==username
     }
 
-    fun GetCurUser():String {
+    fun getCurUser():String {
         return sharedPrefs.login.toString()
     }
 
-    fun HideCalendarAndParams() {
+    private fun hideCalendarAndParams() {
         _isCalendar.value = false
         _isParams.value = false
     }
 
-    fun SetCalendarCommand() {
+    fun setCalendarCommand() {
 
         _isCalendar.value = !_isCalendar.value!!
         _isParams.value = false
     }
 
-    fun SetParamsCommand() {
+    fun setParamsCommand() {
         _isParams.value = !_isParams.value!!
         _isCalendar.value = false
     }
 
-    fun SetTodayCommand() {
+    fun setTodayCommand() {
         _isToday.value = true
 
         val from: Calendar = GregorianCalendar()
@@ -118,155 +108,156 @@ class ScheduleViewModel(val application: Application, val username: String): Vie
         SetIntervalCommand(from, to)
     }
 
-    fun SetThisWeekCommand() {
+    fun setThisWeekCommand() {
         _isThisWeek.value = true
 
-        var from: Calendar = GregorianCalendar()
+        val from: Calendar = GregorianCalendar()
         from.add(Calendar.DAY_OF_WEEK, -from[Calendar.DAY_OF_WEEK] + 1)
 
-        var to = GregorianCalendar()
+        val to = GregorianCalendar()
         to.add(Calendar.DAY_OF_WEEK, 7 - to[Calendar.DAY_OF_WEEK] + 1)
 
         SetIntervalCommand(from, to)
     }
 
-    fun SetIntervalCommand() {
+    fun setIntervalCommand() {
         _isInterval.value = true
         SetIntervalCommand(dateAndTimeFrom, dateAndTimeTo)
-        GetTasks()
+        getTasks()
     }
 
     fun SetIntervalCommand(from: Calendar, to: Calendar) {
-        SetFromDateCommand(from)
-        SetToDateCommand(to)
-        GetTasks()
+        setFromDateCommand(from)
+        setToDateCommand(to)
+        getTasks()
     }
 
 
-    fun SetFromDateCommand(fullDate: Calendar) {
+    fun setFromDateCommand(fullDate: Calendar) {
         val date = fullDate[Calendar.DAY_OF_MONTH]
         val month = fullDate[Calendar.MONTH]
         val year = fullDate[Calendar.YEAR]
         val dispMonth = month + 1
         dateAndTimeFrom[year, month] = date
-        _dateAndTimeFromString.value = DateAndTimeConverter.ConvertToStringDate(year, dispMonth, date)
+        _dateAndTimeFromString.value = DateAndTimeConverter.convertToStringDate(year, dispMonth, date)
 
-        //savedStateHandle.set(DATE_AND_TIME_FROM, fullDate)
-
-        SetMinTime(dateAndTimeFrom)
+        setMinTime(dateAndTimeFrom)
 
     }
 
-    fun SetToDateCommand(fullDate: Calendar) {
+    fun setToDateCommand(fullDate: Calendar) {
         val date = fullDate[Calendar.DAY_OF_MONTH]
         val month = fullDate[Calendar.MONTH]
         val year = fullDate[Calendar.YEAR]
         val dispMonth = month + 1
         dateAndTimeTo[year, month] = date
-        _dateAndTimeToString.value = DateAndTimeConverter.ConvertToStringDate(year, dispMonth, date)
+        _dateAndTimeToString.value = DateAndTimeConverter.convertToStringDate(year, dispMonth, date)
 
-        SetMaxTime(dateAndTimeTo)
-
-
-        //  savedStateHandle.set(DATE_AND_TIME_TO, fullDate)
-    }
-
-    fun GetTasks() {
-        serverTaskManager.GetTasksFromServer(username, dateAndTimeFrom, dateAndTimeTo, "")
+        getMaxTime(dateAndTimeTo)
 
     }
 
-    fun GetTasks(filter: String) {
-        serverTaskManager.GetTasksFromServer(username, dateAndTimeFrom, dateAndTimeTo, filter)
+    fun getTasks() {
+        serverTaskManager.getTasksFromServer(username, dateAndTimeFrom, dateAndTimeTo, "")
 
     }
 
-    fun GetTasks(dFrom: Calendar, dTo: Calendar, filter: String) {
-        serverTaskManager.GetTasksFromServer(username, dFrom, dTo, filter)
+    fun getTasks(filter: String) {
+        serverTaskManager.getTasksFromServer(username, dateAndTimeFrom, dateAndTimeTo, filter)
+
     }
 
-    fun DeleteTask(task: TaskComparable) {
-        serverTaskManager.DeleteTask(username, task.GetTaskNumber())
+    fun getTasks(dFrom: Calendar, dTo: Calendar, filter: String) {
+        serverTaskManager.getTasksFromServer(username, dFrom, dTo, filter)
     }
 
-    fun SetTaskCompleted(task: TaskComparable) {
-        serverTaskManager.UpdateTask(username, task, task.GetTaskNumber())
+    fun deleteTask(task: TaskComparable) {
+        serverTaskManager.deleteTask(username, task.getTaskNumber())
+    }
+
+    fun setTaskCompleted(task: TaskComparable) {
+        serverTaskManager.updateTask(username, task, task.getTaskNumber())
     }
 
     private var taskSubscribeViewChangeCallback: ((subscriberList: List<String>)->Unit)? = null
 
-    fun SubscribeOnUserTask(task: TaskComparable, direction: Boolean, taskSubscribeViewChangeCallback: (subscriberList: List<String>)->Unit) {
+    fun subscribeOnUserTask(task: TaskComparable, direction: Boolean, taskSubscribeViewChangeCallback: (subscriberList: List<String>)->Unit) {
         this.taskSubscribeViewChangeCallback = taskSubscribeViewChangeCallback
-        socketClient.SetUserTaskSubscribeListener(onTaskSubscribeAnswer)
-        socketClient.SubscribeOnUserTask(username, GetCurUser(), direction, task.GetTaskNumber())
+        socketClient.setUserTaskSubscribeListener(onTaskSubscribeAnswer)
+        socketClient.subscribeOnUserTask(username, getCurUser(), direction, task.getTaskNumber())
     }
 
     private val onTaskSubscribeAnswer = Emitter.Listener {  args ->
         val jsonTask = args[3] as JSONObject
         val list = jsonTask.getJSONArray("subscriberList")
 
-        var subscribers = Array(list.length()) {
+        val subscribers = Array(list.length()) {
             list.getString(it)
         }
 
         taskSubscribeViewChangeCallback?.let {
-           // it(task)
             it(subscribers.toList())
         }
-       // GetTasks()
     }
 
-    private fun SetMinTime(calendar: Calendar) {
+    private fun setMinTime(calendar: Calendar) {
         calendar.set(Calendar.HOUR_OF_DAY, 0)
         calendar.set(Calendar.MINUTE, 0)
         calendar.set(Calendar.SECOND, 0)
     }
 
-    private fun SetMaxTime(calendar: Calendar) {
+    private fun getMaxTime(calendar: Calendar) {
         calendar.set(Calendar.HOUR_OF_DAY, 23)
         calendar.set(Calendar.MINUTE, 59)
         calendar.set(Calendar.SECOND, 59)
     }
 
-    override fun OnGetTasks(tasksFromServer: ArrayList<ServerTask>) {
+    override fun onGetTasks(tasksFromServer: ArrayList<ServerTask>) {
         val groupsArrayList = ArrayList<String>()
         val resultTaskList = ArrayList<DayWithTasks>()
 
         val taskComparables = ArrayList<TaskComparable>()
         for (task in tasksFromServer) {
-            val taskComparable = TaskComparable(task)
+            val taskComparable =
+                TaskComparable(task)
             taskComparables.add(taskComparable)
         }
-        Collections.sort(taskComparables, TaskComparable.DateTimeFromComparator)
+        Collections.sort(taskComparables, TaskComparable.dateTimeFromComparator)
 
         for (task in taskComparables) {
-            val dateFrom = task.GetDateFrom()
-            val curTaskDateTimeFrom = task.GetDateTimeFrom()
+            val dateFrom = task.getDateFrom()
+            val curTaskDateTimeFrom = task.getDateTimeFrom()
             val dayOfWeek = curTaskDateTimeFrom[Calendar.DAY_OF_WEEK]
-            val strDayOfWeek = GetStrWeekDay(dayOfWeek)
+            val strDayOfWeek = getStrWeekDay(dayOfWeek)
             val fullDayView = "$strDayOfWeek, $dateFrom"
             if (!groupsArrayList.contains(fullDayView)) {
                 groupsArrayList.add(fullDayView)
                 val curDateTasks: ArrayList<TaskComparable> =
-                    GetCurDateTasks(taskComparables, dateFrom.toString())
-                resultTaskList.add((DayWithTasks(fullDayView, curDateTasks)))
+                    getCurDateTasks(taskComparables, dateFrom.toString())
+                resultTaskList.add((DayWithTasks(
+                    fullDayView,
+                    curDateTasks
+                )))
             }
         }
 
-        _groupedTaskList.value = GroupedTasksCollection(resultTaskList)
-        HideCalendarAndParams()
+        _groupedTaskList.value =
+            GroupedTasksCollection(
+                resultTaskList
+            )
+        hideCalendarAndParams()
 
     }
 
-    override fun OnDeleteTasks() {
-        GetTasks()
+    override fun onDeleteTasks() {
+        getTasks()
     }
 
 
-    private fun GetCurDateTasks(tasks: ArrayList<TaskComparable>, dateFrom: String): ArrayList<TaskComparable> {
+    private fun getCurDateTasks(tasks: ArrayList<TaskComparable>, dateFrom: String): ArrayList<TaskComparable> {
         val resultList = ArrayList<TaskComparable>()
         for (task in tasks) {
-            val curDate = task.GetDateFrom()
+            val curDate = task.getDateFrom()
             if (curDate == dateFrom) {
                 resultList.add(task)
             }
@@ -274,7 +265,7 @@ class ScheduleViewModel(val application: Application, val username: String): Vie
         return resultList
     }
 
-    fun GetStrWeekDay(dayNumber: Int): String? {
+    private fun getStrWeekDay(dayNumber: Int): String? {
         return when (dayNumber) {
             6 -> "SUN"
             7 -> "MON"

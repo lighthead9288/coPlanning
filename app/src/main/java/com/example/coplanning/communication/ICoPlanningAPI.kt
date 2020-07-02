@@ -1,17 +1,11 @@
 package com.example.coplanning.communication
 
-import com.example.coplanning.models.User
-import com.example.coplanning.models.UserTask
+import com.example.coplanning.models.user.User
+import com.example.coplanning.models.task.UserTask
 import retrofit2.Call
 import retrofit2.http.*
 
 interface ICoPlanningAPI {
-
-    @GET("/api/getAllUsers")
-    fun usersList(): Call<List<User?>?>?
-
-    @GET("/api/getUserById/{id}")
-    fun getUser(@Path("id") id: String?): Call<User?>?
 
     @POST("/api/extLogin")
     fun login(
@@ -21,9 +15,6 @@ interface ICoPlanningAPI {
 
     @POST("/api/extRegister")
     fun register(@Body user: User): Call<User>
-
-    @POST("/api/extSetUserTaskList")
-    fun setUserTaskList(@Body user: User?): Call<User?>?
 
     @GET("/api/extGetUserTaskList")
     fun getUserTaskList(
@@ -35,10 +26,7 @@ interface ICoPlanningAPI {
         @Query("taskFilter") taskFilter: String?
     ): Call<User>
 
-    //@GET("/api/extGetUserUnavailableTime")
 
-
-    //@GET("/api/extGetUserUnavailableTime")
     @POST("/api/extAddTask")
     fun addTask(@Body params: UserTask?): Call<String>
 

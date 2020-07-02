@@ -23,9 +23,11 @@ private const val MAPPING_DATA = "mappingData"
  * Use the [MappingResultsFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class MappingResultsFragment : Fragment() {
+class MappingResultsFragment : Fragment(), InitViewModel {
     // TODO: Rename and change types of parameters
     private var mappingData: String? = null
+    private lateinit var binding: FragmentMappingResultsBinding
+    private lateinit var viewModel: MappingResultsViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,51 +35,52 @@ class MappingResultsFragment : Fragment() {
         arguments?.let {
             mappingData = it.getString(MAPPING_DATA)
         }
-        InitViewModel(application)
+        initViewModel(application)
     }
 
-    lateinit var viewModel: MappingResultsViewModel
-
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        initBinding(inflater, container)
+        initObservables()
+        return binding.root
+    }
+
+    private fun initObservables() {
         val application = requireNotNull(this.activity).application
-        val binding: FragmentMappingResultsBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_mapping_results, container, false)
-        binding.viewModel = viewModel
-
-        binding.allParticapants.setOnClickListener {
-            viewModel.UpdateResultsList()
-        }
-        binding.allParticapantsWithoutOne.setOnClickListener {
-            viewModel.UpdateResultsList()
-        }
-        binding.other.setOnClickListener {
-            viewModel.UpdateResultsList()
-        }
-
         viewModel.allGroupedMappingResultElements.observe(viewLifecycleOwner, Observer {
             val groups = it.groupedMappingResults.map { it.groupName }
             val adapter = ExpandableMappingIntervalsAdapter(application, groups, it.groupedMappingResults, R.layout.mapping_result_group_layout, R.layout.mapping_interval_layout)
             binding.mappingIntervals.setAdapter(adapter)
         })
-
-        binding.lifecycleOwner = this
-
-        return binding.root
     }
 
-    fun InitViewModel(application: Application) {
+    private fun initBinding(inflater: LayoutInflater, container: ViewGroup?) {
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_mapping_results, container, false)
+        binding.viewModel = viewModel
 
+        binding.allParticapants.setOnClickListener {
+            viewModel.updateResultsList()
+        }
+        binding.allParticapantsWithoutOne.setOnClickListener {
+            viewModel.updateResultsList()
+        }
+        binding.other.setOnClickListener {
+            viewModel.updateResultsList()
+        }
+        binding.lifecycleOwner = this
+
+    }
+
+    override fun initViewModel(application: Application) {
         if (ScreensDataStorage.curMappingsScreenData!=null) {
             val data = ScreensDataStorage.curMappingsScreenData as MappingResultsFragment
             viewModel = data.viewModel
-        }
-
-        else {
+        } else {
             viewModel = MappingResultsViewModel(application, mappingData.toString())
             ScreensDataStorage.curMappingsScreenData = this
-
         }
     }
 

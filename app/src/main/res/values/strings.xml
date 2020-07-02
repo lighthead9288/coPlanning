@@ -12,7 +12,6 @@
     <string name="surname">Surname</string>
     <string name="enter_surname">enter surname</string>
     <string name="username">Username</string>
-    <string name="register">Register</string>
     <string name="sun">SUN</string>
     <string name="mon">MON</string>
     <string name="tue">TUE</string>
@@ -36,4 +35,20 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="full_user_name">%1$s %2$s</string>
+    <string name="default_unavailable_time">Default unavailable time</string>
+    <string name="register">Register</string>
+    <string name="show_intervals">Show intervals</string>
+    <string name="today">Today</string>
+    <string name="this_week">This week</string>
+    <string name="set_interval">Set interval</string>
+    <string name="my_schedule">My schedule</string>
+    <string name="search">Search</string>
+    <string name="mappings">Mappings</string>
+    <string name="notifications">Notifications</string>
+    <string name="settings">Settings</string>
+    <string name="from">From</string>
+    <string name="to">To</string>
+    <string name="set_date">Set date</string>
+    <string name="set_time">Set time</string>
+    <string name="delete">Delete</string>
 </resources>

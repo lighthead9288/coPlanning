@@ -1,7 +1,6 @@
 package com.example.coplanning.viewmodels
 
 import android.app.Application
-import android.view.View
 import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -34,15 +33,15 @@ class ProfileViewModel(val application: Application) {
 
     private val mappingElementsManager: MappingElementsManager = MappingElementsManager()
 
-    val _timeFromString = MutableLiveData<String>()
+    private val _timeFromString = MutableLiveData<String>()
     val timeFromString: LiveData<String>
         get() = _timeFromString
 
-    val _timeToString = MutableLiveData<String>()
+    private val _timeToString = MutableLiveData<String>()
     val timeToString: LiveData<String>
         get() = _timeToString
 
-    val _curUserName = MutableLiveData<String>()
+    private val _curUserName = MutableLiveData<String>()
     val curUserName: LiveData<String>
         get() = _curUserName
 
@@ -67,22 +66,22 @@ class ProfileViewModel(val application: Application) {
         _timeFromString.value = "00:00"
         _timeToString.value = "00:00"
 
-        val username = GetCurUserName()
+        val username = getCurUserName()
         _curUserName.value = username
 
-        socketClient.SetUnavailableTimeAnswer(onUnavailableTimeAnswer)
-        socketClient.GetUserUnavailableTime(username)
+        socketClient.setUnavailableTimeAnswer(onUnavailableTimeAnswer)
+        socketClient.getUserUnavailableTime(username)
     }
 
-    fun Logout() {
-        badgesOperations.ClearMappingsAmount()
-        sharedPrefs.ClearSharedPreferences()
+    fun logout() {
+        badgesOperations.clearMappingsAmount()
+        sharedPrefs.clearSharedPreferences()
 
-        mappingElementsManager.ClearMappingElements()
-        socketClient.OffListeners()
-        socketClient.Disconnect()
+        mappingElementsManager.clearMappingElements()
+        socketClient.offListeners()
+        socketClient.disconnect()
 
-        ScreensDataStorage.ClearAll()
+        ScreensDataStorage.clearAll()
     }
 
     fun SaveIntervals() {
@@ -97,8 +96,8 @@ class ProfileViewModel(val application: Application) {
         unavailableTime.put("default", defaultUnavailableTime)
         unavailableTime.put("custom", customIntervals)
 
-        val username = GetCurUserName()
-        socketClient.SetUserUnavailableTime(username, unavailableTime)
+        val username = getCurUserName()
+        socketClient.setUserUnavailableTime(username, unavailableTime)
 
         uiScope.launch {
             Toast.makeText(application, "Interval has been saved!", Toast.LENGTH_LONG).show()
@@ -106,15 +105,15 @@ class ProfileViewModel(val application: Application) {
     }
 
 
-    fun GetCurUserName(): String? { return sharedPrefs.login}
+    private fun getCurUserName(): String? { return sharedPrefs.login}
 
 
-    fun SetTimeFromCommand(hours: Int, minutes: Int) {
-        _timeFromString.value = DateAndTimeConverter.ConvertToISOStringTime(hours, minutes)
+    fun setTimeFromCommand(hours: Int, minutes: Int) {
+        _timeFromString.value = DateAndTimeConverter.convertToISOStringTime(hours, minutes)
     }
 
-    fun SetTimeToCommand(hours: Int, minutes: Int) {
-        _timeToString.value = DateAndTimeConverter.ConvertToISOStringTime(hours, minutes)
+    fun setTimeToCommand(hours: Int, minutes: Int) {
+        _timeToString.value = DateAndTimeConverter.convertToISOStringTime(hours, minutes)
     }
 
 

@@ -8,10 +8,13 @@ import android.widget.ArrayAdapter
 import android.widget.ImageButton
 import android.widget.TextView
 import com.example.coplanning.R
-import java.util.*
 
-class MappingElementsAdapter(context: Context?, val layout: Int, val mapElements: List<String>,
-                             val removeFromMappingCallback: (element: String) -> Unit): ArrayAdapter<String?>(context!!, layout, mapElements) {
+class MappingElementsAdapter(
+    context: Context?,
+    private val layout: Int,
+    private val mapElements: List<String>,
+    private val removeFromMappingCallback: (element: String) -> Unit)
+    : ArrayAdapter<String?>(context!!, layout, mapElements) {
 
     override fun getView(
         position: Int,
@@ -26,6 +29,4 @@ class MappingElementsAdapter(context: Context?, val layout: Int, val mapElements
         closeButton.setOnClickListener { v -> removeFromMappingCallback(mapElement) }
         return view
     }
-
-
 }

@@ -36,51 +36,51 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
-                        android:layout_gravity="right"
+                        android:layout_gravity="end"
                         >
 
                         <androidx.appcompat.widget.SearchView
                             android:layout_width="250dp"
                             android:layout_height="match_parent"
                             android:id="@+id/taskFilterSv"
-                            android:layout_gravity="left"
+                            android:layout_gravity="start"
                             />
 
                         <ImageButton
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:id="@+id/addTaskButton"
-                            android:layout_gravity="right"
+                            android:layout_gravity="end"
                             android:layout_marginStart="15dp"
                             android:background="@null"
                             android:visibility="@{viewModel._isMe?View.VISIBLE:View.INVISIBLE}"
                             android:src="@drawable/add"
-                            android:paddingRight="10dp"
+                            android:paddingEnd="10dp"
                             />
 
                         <ImageButton
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:id="@+id/filterButton"
-                            android:layout_gravity="right"
+                            android:layout_gravity="end"
                             android:background="@null"
                             android:src="@drawable/filter"
-                            android:paddingRight="10dp"
-                            android:onClick="@{()->viewModel.SetParamsCommand()}"
+                            android:paddingEnd="10dp"
+                            android:onClick="@{()->viewModel.setParamsCommand()}"
                             />
 
                         <ImageButton
                             android:id="@+id/calendarButton"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_gravity="right"
+                            android:layout_gravity="end"
                             android:background="@null"
-                            android:paddingRight="10dp"
+                            android:paddingEnd="10dp"
                             android:src="@drawable/calendar"
-                            android:onClick="@{()->viewModel.SetCalendarCommand()}"
+                            android:onClick="@{()->viewModel.setCalendarCommand()}"
                             />
 
-                    </LinearLayout>>
+                    </LinearLayout>
 
 
                     <com.example.coplanning.calendar.CalendarCustomView
@@ -110,33 +110,33 @@
                                 android:id="@+id/today"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginLeft="24dp"
+                                android:layout_marginStart="24dp"
                                 android:layout_weight="1"
-                                android:text="Today"
+                                android:text="@string/today"
                                 android:checked="@={viewModel._isToday}"
-                                android:onClick="@{()->viewModel.SetTodayCommand()}"
+                                android:onClick="@{()->viewModel.setTodayCommand()}"
                                 style="@style/TextViewParamValue" />
 
                             <RadioButton
                                 android:id="@+id/thisWeek"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginLeft="24dp"
+                                android:layout_marginStart="24dp"
                                 android:layout_weight="1"
-                                android:text="This week"
+                                android:text="@string/this_week"
                                 android:checked="@={viewModel._isThisWeek}"
-                                android:onClick="@{()->viewModel.SetThisWeekCommand()}"
+                                android:onClick="@{()->viewModel.setThisWeekCommand()}"
                                 style="@style/TextViewParamValue" />
 
                             <RadioButton
                                 android:id="@+id/setInterval"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginLeft="24dp"
+                                android:layout_marginStart="24dp"
                                 android:layout_weight="1"
-                                android:text="Set interval"
+                                android:text="@string/set_interval"
                                 android:checked="@={viewModel._isInterval}"
-                                android:onClick="@{()->viewModel.SetIntervalCommand()}"
+                                android:onClick="@{()->viewModel.setIntervalCommand()}"
                                 style="@style/TextViewParamValue" />
                         </RadioGroup>
                         <LinearLayout
@@ -151,10 +151,10 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:paddingLeft="30dp"
-                                android:paddingRight="10dp"
+                                android:paddingStart="30dp"
+                                android:paddingEnd="10dp"
                                 style="@style/TextViewParamName"
-                                android:text="From" />
+                                android:text="@string/from" />
 
                             <TextView
                                 android:id="@+id/dateFrom"
@@ -180,10 +180,10 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:paddingLeft="30dp"
-                                android:paddingRight="32dp"
+                                android:paddingStart="30dp"
+                                android:paddingEnd="32dp"
                                 style="@style/TextViewParamName"
-                                android:text="To" />
+                                android:text="@string/to" />
 
                             <TextView
                                 android:id="@+id/dateTo"

@@ -7,19 +7,27 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import com.example.coplanning.R
-import com.example.coplanning.models.DayWithTasks
-import com.example.coplanning.models.TaskComparable
-import com.example.coplanning.models.User
+import com.example.coplanning.models.task.DayWithTasks
+import com.example.coplanning.models.task.TaskComparable
 
 
 class ExpandableTaskListAdapter internal constructor(
-    val context: Context, val groupsList: List<String>, val taskCollection: List<DayWithTasks>, val groupLayout: Int,
-    val taskLayout: Int, val username: String, val taskSetCompletedCallback: (task: TaskComparable)->Unit, val taskDeleteCallback: (task: TaskComparable)->Unit,
-    val taskSubscribeCallback: (task: TaskComparable, direction: Boolean, callback: (subscriberList: List<String>)->Unit)->Unit) : BaseExpandableListAdapter() {
+    private val context: Context,
+    private val groupsList: List<String>,
+    private val taskCollection: List<DayWithTasks>,
+    private val groupLayout: Int,
+    private val taskLayout: Int,
+    private val username: String,
+    private val taskSetCompletedCallback: (task: TaskComparable)->Unit,
+    private val taskDeleteCallback: (task: TaskComparable)->Unit,
+    private val taskSubscribeCallback: (
+        task: TaskComparable,
+        direction: Boolean,
+        callback: (subscriberList: List<String>)->Unit)->Unit)
+    : BaseExpandableListAdapter() {
 
     override fun getGroupCount(): Int {
-        val size = groupsList.size
-        return size
+        return groupsList.size
     }
 
     override fun getChildrenCount(groupPosition: Int): Int {
@@ -57,7 +65,7 @@ class ExpandableTaskListAdapter internal constructor(
             convertView = inflater.inflate(groupLayout, null)
         }
         val groupTitleTv = convertView?.findViewById<TextView>(R.id.taskGroupName)
-        groupTitleTv?.setTypeface(Typeface.defaultFromStyle(Typeface.BOLD))
+        groupTitleTv?.typeface = Typeface.defaultFromStyle(Typeface.BOLD)
         groupTitleTv?.text = groupTitle
         return convertView
     }
@@ -77,9 +85,8 @@ class ExpandableTaskListAdapter internal constructor(
         val tCompletedView = convertView?.findViewById<CheckBox>(R.id.taskCompleted)
         tCompletedView?.setOnClickListener {
             val completedState = tCompletedView.isChecked
-            task.SetCompleted(completedState)
+            task.setCompleted(completedState)
             taskSetCompletedCallback(task)
-
         }
 
         val tDeleteIb = convertView?.findViewById<ImageButton>(R.id.taskDeleteIb)
@@ -87,60 +94,57 @@ class ExpandableTaskListAdapter internal constructor(
             taskDeleteCallback(task)
         }
 
-
         val tSubscribeIb = convertView?.findViewById<ImageButton>(R.id.taskSubscribeIb)
-
         tSubscribeIb?.let {
-            val subscriberList = task.GetSubscriberList()
+            val subscriberList = task.getSubscriberList()
             if (subscriberList != null) {
-                ChangeUserSubscribeButton(it, username, subscriberList)
+                changeUserSubscribeButton(it, username, subscriberList)
             }
         }
 
-        var direction = !task.GetSubscriberList()?.contains(username)!!
+        var direction = !task.getSubscriberList()?.contains(username)!!
         tSubscribeIb?.setOnClickListener {
             taskSubscribeCallback(task, direction
             ) { subscriberList ->
-                tSubscribeIb?.let { ChangeUserSubscribeButton(it, username, subscriberList) }
+                changeUserSubscribeButton(tSubscribeIb, username, subscriberList)
                 direction = !direction
             }
         }
 
         val taskDateTimeInterval: String
-        var taskDateFrom: String? = task.GetDateFrom()
+        var taskDateFrom: String? = task.getDateFrom()
+
         taskDateFrom = taskDateFrom ?: "??"
-        var taskTimeFrom: String? = task.GetTimeFrom()
+        var taskTimeFrom: String? = task.getTimeFrom()
         taskTimeFrom = taskTimeFrom ?: "??"
-        var taskDateTo: String? = task.GetDateTo()
+        var taskDateTo: String? = task.getDateTo()
         taskDateTo = taskDateTo ?: "??"
-        var taskTimeTo: String? = task.GetTimeTo()
+        var taskTimeTo: String? = task.getTimeTo()
         taskTimeTo = taskTimeTo ?: "??"
         taskDateTimeInterval =
             "$taskDateFrom, $taskTimeFrom - $taskDateTo, $taskTimeTo"
-        tNameView?.text = task.GetName()
-        tCommentView?.text = task.GetComment()
+        tNameView?.text = task.getName()
+        tCommentView?.text = task.getComment()
         tDateTimeInterval?.text = taskDateTimeInterval
-        tCompletedView?.isChecked = task.GetCompleted()!!
-      /*  if (selectedTasks.contains(task)) convertView.setBackgroundColor(
-            Color.GRAY
-        )*/
+        tCompletedView?.isChecked = task.getCompleted()!!
+
         return convertView
     }
 
-    fun ChangeUserSubscribeButton(button: ImageButton, username: String, subscriberList: List<String>) {
-        if (subscriberList.contains(username))
+    private fun changeUserSubscribeButton(
+        button: ImageButton,
+        username: String,
+        subscriberList: List<String>) {
+        if (subscriberList.contains(username)) {
             button.setImageResource(R.drawable.subscribe_off)
-        else
+        } else {
             button.setImageResource(R.drawable.subscribe_on)
+        }
     }
 
     override fun isChildSelectable(groupPosition: Int, childPosition: Int): Boolean {
         return true
     }
 
-   /* companion object {
-        var selectedTasks: ArrayList<TaskComparable> =
-            ArrayList<TaskComparable>()
-    }*/
 
 }

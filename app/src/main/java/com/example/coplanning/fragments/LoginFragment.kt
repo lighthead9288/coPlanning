@@ -23,10 +23,11 @@ private const val ARG_PARAM2 = "param2"
  * create an instance of this fragment.
  */
 class LoginFragment : Fragment() {
-    // TODO: Rename and change types of parameters
+
     private var param1: String? = null
     private var param2: String? = null
 
+    private lateinit var binding: FragmentLoginBinding
     private lateinit var viewModel: LoginViewModel
     private lateinit var fragmentOperations: FragmentOperations
     private var menuOperations = MenuOperations()
@@ -44,28 +45,34 @@ class LoginFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
-        val binding: FragmentLoginBinding  = DataBindingUtil.inflate(inflater, R.layout.fragment_login, container, false)
-        val application = requireNotNull(this.activity).application
-
-        fragmentOperations = FragmentOperations(fragmentManager)
-
-        viewModel = LoginViewModel(application) {
-            menuOperations.ShowBottomNavigationView()
-          //  fragmentOperations.LoadFragment(ScheduleFragment())
-            fragmentOperations.LoadFragment(ProfileFragment())
-        }
-
-        binding.registerButton.setOnClickListener {
-            val registerFragment = RegisterFragment()
-            fragmentOperations.LoadFragment(registerFragment)
-        }
-
-        binding.viewModel = viewModel
-        binding.lifecycleOwner = this
-
+        initFragmentOperations()
+        initViewModel()
+        initBinding(inflater, container)
         // Inflate the layout for this fragment
         return binding.root
+    }
+
+    private fun initFragmentOperations() {
+        fragmentOperations = FragmentOperations(fragmentManager)
+
+    }
+
+    private fun initBinding(inflater: LayoutInflater, container: ViewGroup?) {
+        binding  = DataBindingUtil.inflate(inflater, R.layout.fragment_login, container, false)
+        binding.registerButton.setOnClickListener {
+            val registerFragment = RegisterFragment()
+            fragmentOperations.loadFragment(registerFragment)
+        }
+        binding.viewModel = viewModel
+        binding.lifecycleOwner = this
+    }
+
+    private fun initViewModel() {
+        val application = requireNotNull(this.activity).application
+        viewModel = LoginViewModel(application) {
+            menuOperations.showBottomNavigationView()
+            fragmentOperations.loadFragment(ProfileFragment())
+        }
     }
 
 

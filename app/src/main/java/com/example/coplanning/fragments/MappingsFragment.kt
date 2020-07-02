@@ -29,10 +29,14 @@ private const val ARG_PARAM2 = "param2"
  * Use the [MappingsFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class MappingsFragment : Fragment() {
+class MappingsFragment : Fragment(), InitViewModel {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
+    private lateinit var binding: FragmentMappingsBinding
+    private lateinit var viewModel: MappingsViewModel
+    private lateinit var fragmentOperations: FragmentOperations
+    private lateinit var savedMappingsAdapter: SavedMappingsAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,20 +45,49 @@ class MappingsFragment : Fragment() {
             param2 = it.getString(ARG_PARAM2)
         }
         val application = requireNotNull(this.activity).application
-        InitViewModel(application)
+        initViewModel(application)
     }
 
-    lateinit var viewModel: MappingsViewModel
-    lateinit var fragmentOperations: FragmentOperations
-
-
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val binding: FragmentMappingsBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_mappings, container, false)
-        val application = requireNotNull(this.activity).application
+        initFragmentOperations()
+        initBinding(inflater, container)
+        initObservables()
+        viewModel.updateMappingPanelState()
+
+        return binding.root
+    }
+
+    private fun initFragmentOperations() {
         fragmentOperations = FragmentOperations(fragmentManager)
+    }
+
+    private fun initObservables() {
+        val application = requireNotNull(this.activity).application
+        viewModel.mappingParticipants.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+            val mapAdapter = MappingElementsAdapter(application, R.layout.mapping_element_layout,
+                it
+            ) { it ->
+                viewModel.removeUserFromMapping(it)
+            }
+            binding.mapElementsGv.adapter = mapAdapter
+
+        })
+        viewModel.savedMappings.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+            savedMappingsAdapter.submitList(it)
+        })
+    }
+
+    private fun initBinding(inflater: LayoutInflater, container: ViewGroup?) {
+        val binding: FragmentMappingsBinding = DataBindingUtil.inflate(
+            inflater,
+            R.layout.fragment_mappings,
+            container,
+            false
+        )
 
         binding.viewModel = viewModel
         binding.mappingDateFrom.setOnClickListener {
@@ -70,116 +103,94 @@ class MappingsFragment : Fragment() {
             showSetTimeToDialog()
         }
 
-        viewModel.UpdateMappingPanelState()
-
-        viewModel.mappingParticipants.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
-            val mapAdapter = MappingElementsAdapter(application, R.layout.mapping_element_layout,
-                it
-            ) {
-                viewModel.RemoveUserFromMapping(it)
-            }
-            binding.mapElementsGv.adapter = mapAdapter
-
-        })
-
         val savedMappingsAdapter = SavedMappingsAdapter(SavedMappingClickListener {
-            viewModel.SetMappingParameters(it)
+            viewModel.setMappingParameters(it)
         })
         binding.savedMappingsRv.adapter = savedMappingsAdapter
 
-        viewModel.savedMappings.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
-            savedMappingsAdapter.submitList(it)
-        })
-
         binding.runMappingButton.setOnClickListener {
-            val mappingData = viewModel.GetJSONMappingData()
+            val mappingData = viewModel.getJSONMappingData()
             val fragment = MappingResultsFragment()
-
             val bundle = Bundle()
             bundle.putString("mappingData", mappingData.toString())
             fragment.arguments = bundle
-
             ScreensDataStorage.curMappingsScreenData = null
-            fragmentOperations.LoadFragment(fragment)
+            fragmentOperations.loadFragment(fragment)
         }
 
         binding.lifecycleOwner = this
+    }
 
-        return binding.root
+    override fun initViewModel(application: Application) {
+        if (ScreensDataStorage.curMappingsScreenData!=null) {
+            val data = ScreensDataStorage.curMappingsScreenData as MappingsFragment
+            viewModel = data.viewModel
+        } else {
+            viewModel = MappingsViewModel(application)
+            ScreensDataStorage.curMappingsScreenData = this
+        }
     }
 
     private fun showSetDateFromDialog() {
         DatePickerDialog(
-            context!!, dFrom,
+            requireContext(), dFrom,
             viewModel.dateAndTimeFrom.get(Calendar.YEAR),
             viewModel.dateAndTimeFrom.get(Calendar.MONTH),
             viewModel.dateAndTimeFrom.get(Calendar.DAY_OF_MONTH)
         )
             .show()
     }
-    var dFrom =
+    private var dFrom =
         DatePickerDialog.OnDateSetListener { view, year, monthOfYear, dayOfMonth ->
-            viewModel.SetDateFromCommand(year, monthOfYear, dayOfMonth)
+            viewModel.setDateFromCommand(year, monthOfYear, dayOfMonth)
         }
 
-    fun showSetTimeFromDialog() {
+    private fun showSetTimeFromDialog() {
         TimePickerDialog(
-            context,
+            requireContext(),
             tFrom,
             viewModel.dateAndTimeFrom.get(Calendar.HOUR_OF_DAY),
             viewModel.dateAndTimeFrom.get(Calendar.MINUTE),
             true
-        ).show()
+        )
+            .show()
     }
 
-    var tFrom =
+    private var tFrom =
         TimePickerDialog.OnTimeSetListener { view, hourOfDay, minute ->
-            viewModel.SetTimeFromCommand(hourOfDay, minute)
+            viewModel.setTimeFromCommand(hourOfDay, minute)
         }
 
 
     private fun showSetDateToDialog() {
         DatePickerDialog(
-            context!!, dTo,
+            requireContext(), dTo,
             viewModel.dateAndTimeTo.get(Calendar.YEAR),
             viewModel.dateAndTimeTo.get(Calendar.MONTH),
             viewModel.dateAndTimeTo.get(Calendar.DAY_OF_MONTH)
         )
             .show()
     }
-    var dTo =
+    private var dTo =
         DatePickerDialog.OnDateSetListener { view, year, monthOfYear, dayOfMonth ->
-            viewModel.SetDateToCommand(year, monthOfYear, dayOfMonth)
+            viewModel.setDateToCommand(year, monthOfYear, dayOfMonth)
         }
 
-    fun showSetTimeToDialog() {
+    private fun showSetTimeToDialog() {
         TimePickerDialog(
-            context,
+            requireContext(),
             tTo,
             viewModel.dateAndTimeTo.get(Calendar.HOUR_OF_DAY),
             viewModel.dateAndTimeTo.get(Calendar.MINUTE),
             true
-        ).show()
+        )
+            .show()
     }
 
-    var tTo =
+    private var tTo =
         TimePickerDialog.OnTimeSetListener { view, hourOfDay, minute ->
-            viewModel.SetTimeToCommand(hourOfDay, minute)
+            viewModel.setTimeToCommand(hourOfDay, minute)
         }
-
-    fun InitViewModel(application: Application) {
-
-        if (ScreensDataStorage.curMappingsScreenData!=null) {
-            val data = ScreensDataStorage.curMappingsScreenData as MappingsFragment
-            viewModel = data.viewModel
-        }
-
-        else {
-            viewModel = MappingsViewModel(application)
-            ScreensDataStorage.curMappingsScreenData = this
-
-        }
-    }
 
     companion object {
         /**

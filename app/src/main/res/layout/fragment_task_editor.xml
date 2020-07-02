@@ -45,6 +45,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     style="@style/TextViewParamName"
+                    android:labelFor="@id/taskName"
                     android:text="@string/name" />
 
                 <EditText
@@ -52,11 +53,13 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@={viewModel._name}"
+                    android:autofillHints="@string/username"
                     android:background="@drawable/rounded_edittext"/>
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:labelFor="@id/taskComment"
                     style="@style/TextViewParamName"
                     android:text="@string/comment" />
 
@@ -66,6 +69,7 @@
                     android:layout_height="wrap_content"
                     android:ems="10"
                     android:inputType="textMultiLine"
+                    android:autofillHints="@string/comment"
                     android:text="@={viewModel._comment}"
                     android:background="@drawable/rounded_edittext"
                     tools:layout_editor_absoluteX="0dp"
@@ -82,7 +86,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
-                        android:paddingRight="50dp"
+                        android:paddingEnd="50dp"
                         >
 
                         <TextView
@@ -101,7 +105,7 @@
                                 android:layout_height="wrap_content"
                                 style="@style/TextViewParamValue"
                                 android:text="@={viewModel._dateFromString}"
-                                android:enabled="@{!viewModel._unspecifyDateFrom}"
+                                android:enabled="@{!viewModel.unspecifyDateFrom}"
                                 android:background="@drawable/datetimeshape"
                                 />
                             <CheckBox
@@ -165,7 +169,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
-                        android:paddingRight="50dp"
+                        android:paddingEnd="50dp"
                         >
 
                         <TextView
@@ -236,22 +240,6 @@
                     </LinearLayout>
                 </LinearLayout>
 
-
-
-
-
-
-                <!--  <TextView
-                      android:layout_width="match_parent"
-                      android:layout_height="wrap_content"
-                      android:text="Duration" />
-
-                  <EditText
-                      android:id="@+id/taskDuration"
-                      android:layout_width="match_parent"
-                      android:layout_height="wrap_content"
-                      android:inputType="number" />-->
-
                 <CheckBox
                     android:id="@+id/taskVisibility"
                     android:layout_width="match_parent"
@@ -260,14 +248,6 @@
                     android:checked="@={viewModel._visibility}"
                     android:text="@string/visibility" />
 
-                <CheckBox
-                    android:id="@+id/taskEditable"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    style="@style/TextViewParamName"
-                    android:visibility="gone"
-                    android:text="@string/editable" />
-
                 <Button
                     android:id="@+id/taskConfirm"
                     android:layout_width="match_parent"
@@ -275,7 +255,7 @@
                     android:text="@string/save"
                     android:background="@drawable/buttonshape"
                     android:textColor="@color/colorWhite"
-                    android:onClick="@{()->viewModel.SaveTask()}"
+                    android:onClick="@{()->viewModel.saveTask()}"
                     />
 
 

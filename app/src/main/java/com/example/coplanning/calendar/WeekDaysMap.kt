@@ -6,9 +6,8 @@ import java.util.*
 class WeekDaysMap {
 
     companion object {
-        private var weekDaysMap: MutableMap<Int, Int> = HashMap<Int, Int>()
+        private var weekDaysMap: MutableMap<Int, Int> = HashMap()
         fun createMap(): Map<Int, Int>? {
-           // weekDaysMap = HashMap<Int, Int>()
             weekDaysMap[0] = R.string.sun
             weekDaysMap[1] = R.string.mon
             weekDaysMap[2] = R.string.tue

@@ -1,20 +1,20 @@
 package com.example.coplanning.viewmodels
 
 import android.app.Application
-import android.service.autofill.SaveCallback
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.coplanning.globals.SharedPreferencesOperations
 import com.example.coplanning.helpers.DateAndTimeConverter
-import com.example.coplanning.models.ITaskListOperations
-import com.example.coplanning.models.ServerTask
-import com.example.coplanning.models.ServerTaskManager
-import com.example.coplanning.models.TaskComparable
-import retrofit2.Converter
+import com.example.coplanning.models.task.ITaskListOperations
+import com.example.coplanning.models.task.ServerTask
+import com.example.coplanning.models.task.ServerTaskManager
+import com.example.coplanning.models.task.TaskComparable
 import java.util.*
 
-class TaskEditorViewModel(val application: Application, val onSaveTaskCallback: ()->Unit): ViewModel(), ITaskListOperations {
+class TaskEditorViewModel(val application: Application, val onSaveTaskCallback: ()->Unit)
+    : ViewModel(),
+    ITaskListOperations {
 
     val _name = MutableLiveData<String>()
     val name: LiveData<String>
@@ -60,50 +60,62 @@ class TaskEditorViewModel(val application: Application, val onSaveTaskCallback: 
     val visibility: LiveData<Boolean>
         get() = _visibility
 
-
-    val dateAndTimeFrom = Calendar.getInstance()
-    val dateAndTimeTo = Calendar.getInstance()
-
+    val dateAndTimeFrom: Calendar = Calendar.getInstance()
+    val dateAndTimeTo: Calendar = Calendar.getInstance()
     private var taskId: Int? = null
-
-    val serverTaskManager = ServerTaskManager(this)
-
+    private val serverTaskManager = ServerTaskManager(this)
     private var sharedPrefs = SharedPreferencesOperations(application)
 
-    constructor(task: TaskComparable, application: Application, onSaveTaskCallback: ()->Unit) : this(application, onSaveTaskCallback) {
-        _name.value = task.GetName()
-        _comment.value = task.GetComment()
+    constructor(task: TaskComparable, application: Application, onSaveTaskCallback: ()->Unit)
+            : this(application, onSaveTaskCallback) {
+        _name.value = task.getName()
+        _comment.value = task.getComment()
         _unspecifyDateFrom.value = false
         _unspecifyTimeFrom.value = false
         _unspecifyDateTo.value = false
         _unspecifyTimeTo.value = false
 
-        val dateFrom = task.GetDateFrom().toString()
-        if (!dateFrom.isNullOrEmpty())
-            SetDateFromCommand(DateAndTimeConverter.GetYearFromISOStringDate(dateFrom), DateAndTimeConverter.GetMonthFromISOStringDate(dateFrom) - 1, DateAndTimeConverter.GetDayFromISOStringDate(dateFrom))
-        else
+        val dateFrom = task.getDateFrom().toString()
+        if (!dateFrom.isNullOrEmpty()) {
+            setDateFromCommand(
+                DateAndTimeConverter.getYearFromISOStringDate(dateFrom),
+                DateAndTimeConverter.getMonthFromISOStringDate(dateFrom) - 1,
+                DateAndTimeConverter.getDayFromISOStringDate(dateFrom)
+            )
+        } else {
             _unspecifyDateFrom.value = true
+        }
 
-        val timeFrom = task.GetTimeFrom().toString()
-        if (!timeFrom.isNullOrEmpty())
-            SetTimeFromCommand(DateAndTimeConverter.GetHourFromISOStringTime(timeFrom), DateAndTimeConverter.GetMinutesFromISOStringTime(timeFrom))
-        else
+        val timeFrom = task.getTimeFrom().toString()
+        if (!timeFrom.isNullOrEmpty()) {
+            setTimeFromCommand(
+                DateAndTimeConverter.getHourFromISOStringTime(timeFrom),
+                DateAndTimeConverter.getMinutesFromISOStringTime(timeFrom)
+            )
+        } else {
             _unspecifyTimeFrom.value = true
-        val dateTo = task.GetDateTo().toString()
-        if (!dateTo.isNullOrEmpty())
-            SetDateToCommand(DateAndTimeConverter.GetYearFromISOStringDate(dateTo), DateAndTimeConverter.GetMonthFromISOStringDate(dateTo) - 1, DateAndTimeConverter.GetDayFromISOStringDate(dateTo))
-        else
+        }
+        val dateTo = task.getDateTo().toString()
+        if (!dateTo.isNullOrEmpty()) {
+            setDateToCommand(
+                DateAndTimeConverter.getYearFromISOStringDate(dateTo),
+                DateAndTimeConverter.getMonthFromISOStringDate(dateTo) - 1,
+                DateAndTimeConverter.getDayFromISOStringDate(dateTo)
+            )
+        } else {
             _unspecifyDateTo.value = true
-        val timeTo = task.GetTimeTo().toString()
-        if (!timeTo.isNullOrEmpty())
-            SetTimeToCommand(DateAndTimeConverter.GetHourFromISOStringTime(timeTo), DateAndTimeConverter.GetMinutesFromISOStringTime(timeTo))
-        else
+        }
+        val timeTo = task.getTimeTo().toString()
+        if (!timeTo.isNullOrEmpty()) {
+            setTimeToCommand(
+                DateAndTimeConverter.getHourFromISOStringTime(timeTo),
+                DateAndTimeConverter.getMinutesFromISOStringTime(timeTo)
+            )
+        } else {
             _unspecifyTimeTo.value = true
-
-        _visibility.value = task.GetVisibility()
-
-        taskId = task.GetTaskNumber()
-
+        }
+        _visibility.value = task.getVisibility()
+        taskId = task.getTaskNumber()
     }
 
     init {
@@ -114,89 +126,88 @@ class TaskEditorViewModel(val application: Application, val onSaveTaskCallback: 
         _unspecifyDateTo.value = true
         _unspecifyTimeTo.value = true
 
-        SetDateFromCommand(dateAndTimeFrom[Calendar.YEAR], dateAndTimeFrom[Calendar.MONTH], dateAndTimeFrom[Calendar.DAY_OF_MONTH])
-        SetTimeFromCommand(dateAndTimeFrom[Calendar.HOUR_OF_DAY], dateAndTimeFrom[Calendar.MINUTE])
-        SetDateToCommand(dateAndTimeTo[Calendar.YEAR], dateAndTimeTo[Calendar.MONTH], dateAndTimeTo[Calendar.DAY_OF_MONTH])
-        SetTimeToCommand(dateAndTimeTo[Calendar.HOUR_OF_DAY], dateAndTimeTo[Calendar.MINUTE])
+        setDateFromCommand(dateAndTimeFrom[Calendar.YEAR], dateAndTimeFrom[Calendar.MONTH], dateAndTimeFrom[Calendar.DAY_OF_MONTH])
+        setTimeFromCommand(dateAndTimeFrom[Calendar.HOUR_OF_DAY], dateAndTimeFrom[Calendar.MINUTE])
+        setDateToCommand(dateAndTimeTo[Calendar.YEAR], dateAndTimeTo[Calendar.MONTH], dateAndTimeTo[Calendar.DAY_OF_MONTH])
+        setTimeToCommand(dateAndTimeTo[Calendar.HOUR_OF_DAY], dateAndTimeTo[Calendar.MINUTE])
 
         _visibility.value = true
     }
 
 
-    fun SetDateFromCommand(year: Int, month: Int, date: Int) {
+    fun setDateFromCommand(year: Int, month: Int, date: Int) {
         val dispMonth = month + 1
         dateAndTimeFrom[year, month] = date
-        _dateFromString.value = DateAndTimeConverter.ConvertToStringDate(year, dispMonth, date)
+        _dateFromString.value = DateAndTimeConverter.convertToStringDate(year, dispMonth, date)
     }
 
-    fun SetTimeFromCommand(hours: Int, minutes: Int) {
+    fun setTimeFromCommand(hours: Int, minutes: Int) {
         dateAndTimeFrom[Calendar.HOUR_OF_DAY] = hours
         dateAndTimeFrom[Calendar.MINUTE] = minutes
-        _timeFromString.value = DateAndTimeConverter.ConvertToStringTime(hours, minutes)
+        _timeFromString.value = DateAndTimeConverter.convertToStringTime(hours, minutes)
     }
 
-    fun SetDateToCommand(year: Int, month: Int, date: Int) {
+    fun setDateToCommand(year: Int, month: Int, date: Int) {
         val dispMonth = month + 1
         dateAndTimeTo[year, month] = date
-        _dateToString.value = DateAndTimeConverter.ConvertToStringDate(year, dispMonth, date)
+        _dateToString.value = DateAndTimeConverter.convertToStringDate(year, dispMonth, date)
     }
 
-    fun SetTimeToCommand(hours: Int, minutes: Int) {
+    fun setTimeToCommand(hours: Int, minutes: Int) {
         dateAndTimeTo[Calendar.HOUR_OF_DAY] = hours
         dateAndTimeTo[Calendar.MINUTE] = minutes
-        _timeToString.value = DateAndTimeConverter.ConvertToStringTime(hours, minutes)
+        _timeToString.value = DateAndTimeConverter.convertToStringTime(hours, minutes)
     }
 
-    fun SaveTask() {
-        val task = GetTask()
+    fun saveTask() {
+        val task = getTask()
         when (taskId) {
-            null -> serverTaskManager.AddTask(sharedPrefs.login.toString(), task)
-            else -> serverTaskManager.UpdateTask(sharedPrefs.login.toString(), task, taskId!!)
+            null -> serverTaskManager.addTask(sharedPrefs.login.toString(), task)
+            else -> serverTaskManager.updateTask(sharedPrefs.login.toString(), task, taskId!!)
         }
         onSaveTaskCallback()
     }
 
-    private fun GetTask(): ServerTask {
+    private fun getTask(): ServerTask {
         val task = ServerTask(name.value)
-        task.SetComment(comment.value)
-        visibility.value?.let { task.SetVisibility(it) }
+        task.setComment(comment.value)
+        visibility.value?.let { task.setVisibility(it) }
 
         if (!unspecifyDateFrom.value!!) {
             val strDateFrom = dateFromString.value
-            val year = DateAndTimeConverter.GetYearFromStringDate(strDateFrom.toString())
-            val month = DateAndTimeConverter.GetMonthFromStringDate(strDateFrom.toString())
-            val date = DateAndTimeConverter.GetDayFromStringDate(strDateFrom.toString())
-            task.SetDateFrom(year, month, date)
+            val year = DateAndTimeConverter.getYearFromStringDate(strDateFrom.toString())
+            val month = DateAndTimeConverter.getMonthFromStringDate(strDateFrom.toString())
+            val date = DateAndTimeConverter.getDayFromStringDate(strDateFrom.toString())
+            task.setDateFrom(year, month, date)
         }
 
         if (!unspecifyTimeFrom.value!!) {
             val strTimeFrom = timeFromString.value
-            val hour = DateAndTimeConverter.GetHourFromStringTime(strTimeFrom.toString())
-            val minutes = DateAndTimeConverter.GetMinutesFromStringTime(strTimeFrom.toString())
-            task.SetTimeFrom(hour, minutes)
+            val hour = DateAndTimeConverter.getHourFromStringTime(strTimeFrom.toString())
+            val minutes = DateAndTimeConverter.getMinutesFromStringTime(strTimeFrom.toString())
+            task.setTimeFrom(hour, minutes)
         }
 
         if (!unspecifyDateTo.value!!) {
             val strDateTo: String? = dateToString.value
-            val year = DateAndTimeConverter.GetYearFromStringDate(strDateTo.toString())
-            val month = DateAndTimeConverter.GetMonthFromStringDate(strDateTo.toString())
-            val date = DateAndTimeConverter.GetDayFromStringDate(strDateTo.toString())
-            task.SetDateTo(year, month, date)
+            val year = DateAndTimeConverter.getYearFromStringDate(strDateTo.toString())
+            val month = DateAndTimeConverter.getMonthFromStringDate(strDateTo.toString())
+            val date = DateAndTimeConverter.getDayFromStringDate(strDateTo.toString())
+            task.setDateTo(year, month, date)
         }
 
         if (!unspecifyTimeTo.value!!) {
             val strTimeTo = timeToString.value
-            val hour = DateAndTimeConverter.GetHourFromStringTime(strTimeTo.toString())
-            val minutes = DateAndTimeConverter.GetMinutesFromStringTime(strTimeTo.toString())
-            task.SetTimeTo(hour, minutes)
+            val hour = DateAndTimeConverter.getHourFromStringTime(strTimeTo.toString())
+            val minutes = DateAndTimeConverter.getMinutesFromStringTime(strTimeTo.toString())
+            task.setTimeTo(hour, minutes)
         }
 
         return task
     }
 
+    override fun onGetTasks(tasksFromServer: ArrayList<ServerTask>) {}
 
-    override fun OnGetTasks(tasksFromServer: ArrayList<ServerTask>) {}
-
-    override fun OnDeleteTasks() { }
+    override fun onDeleteTasks() { }
 
 }

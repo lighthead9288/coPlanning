@@ -29,7 +29,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:visibility="@{viewModel._mappingPanelVisible?View.VISIBLE:View.GONE}"
+                android:visibility="@{viewModel.mappingPanelVisible?View.VISIBLE:View.GONE}"
                 android:orientation="vertical"
                 android:id="@+id/mapPanel">
                 <TextView
@@ -37,10 +37,9 @@
                     android:layout_width="42dp"
                     android:layout_height="22dp"
                     android:layout_marginStart="8dp"
-                    android:layout_marginLeft="8dp"
                     android:layout_marginTop="8dp"
                     style="@style/TextViewParamName"
-                    android:text="From" />
+                    android:text="@string/from" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -51,11 +50,10 @@
                         android:id="@+id/mappingDateFrom"
                         android:layout_width="145dp"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentStart="true"
                         android:layout_marginStart="4dp"
-                        android:layout_marginLeft="4dp"
                         android:layout_marginTop="8dp"
-                        android:paddingRight="50dp"
+                        android:paddingEnd="50dp"
                         android:text="@{viewModel.dateFromString}"
                         style="@style/TextViewParamValue"
                         android:background="@drawable/datetimeshape" />
@@ -65,10 +63,9 @@
                         android:layout_width="168dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
-                        android:layout_marginLeft="8dp"
                         android:layout_marginTop="8dp"
-                        android:layout_toRightOf="@id/customUnavailableDateFrom"
-                        android:paddingRight="50dp"
+                        android:layout_toEndOf="@id/customUnavailableDateFrom"
+                        android:paddingEnd="50dp"
                         android:text="@{viewModel.timeFromString}"
                         style="@style/TextViewParamValue"
                         android:background="@drawable/datetimeshape" />
@@ -80,10 +77,9 @@
                     android:layout_width="42dp"
                     android:layout_height="20dp"
                     android:layout_marginStart="8dp"
-                    android:layout_marginLeft="8dp"
                     android:layout_marginTop="8dp"
                     style="@style/TextViewParamName"
-                    android:text="To" />
+                    android:text="@string/to" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -94,11 +90,10 @@
                         android:id="@+id/mappingDateTo"
                         android:layout_width="145dp"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentStart="true"
                         android:layout_marginStart="4dp"
-                        android:layout_marginLeft="4dp"
                         android:layout_marginTop="8dp"
-                        android:paddingRight="50dp"
+                        android:paddingEnd="50dp"
                         android:text="@{viewModel.dateToString}"
                         style="@style/TextViewParamValue"
                         android:background="@drawable/datetimeshape" />
@@ -108,10 +103,9 @@
                         android:layout_width="167dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
-                        android:layout_marginLeft="8dp"
                         android:layout_marginTop="8dp"
-                        android:layout_toRightOf="@id/customUnavailableDateTo"
-                        android:paddingRight="50dp"
+                        android:layout_toEndOf="@id/customUnavailableDateTo"
+                        android:paddingEnd="50dp"
                         android:text="@{viewModel.timeToString}"
                         style="@style/TextViewParamValue"
                         android:background="@drawable/datetimeshape" />
@@ -126,7 +120,7 @@
                     android:layout_marginTop="8dp"
                     android:layout_marginEnd="8dp"
                     android:layout_marginRight="8dp"
-                    android:text="Show intervals"
+                    android:text="@string/show_intervals"
                     android:background="@drawable/buttonshape"
                     android:textColor="@color/colorWhite" />
             </LinearLayout>

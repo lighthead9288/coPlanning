@@ -8,25 +8,30 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.coplanning.databinding.SavedMappingLayoutBinding
 import com.example.coplanning.helpers.DateAndTimeConverter
-import com.example.coplanning.models.SavedMapping
+import com.example.coplanning.models.mapping.SavedMapping
 
-class SavedMappingsAdapter(val savedMappingClickListener: SavedMappingClickListener): ListAdapter<SavedMapping, SavedMappingsAdapter.ViewHolder>(SavedMappingsListDiffCallback()) {
+class SavedMappingsAdapter(
+    private val savedMappingClickListener: SavedMappingClickListener)
+    : ListAdapter<SavedMapping, SavedMappingsAdapter.ViewHolder>(SavedMappingsListDiffCallback()) {
 
-    class ViewHolder private constructor(val binding: SavedMappingLayoutBinding): RecyclerView.ViewHolder(binding.root) {
+    class ViewHolder private constructor(val binding: SavedMappingLayoutBinding)
+        : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(item: SavedMapping, savedMappingClickListener: SavedMappingClickListener) {
             binding.savedMapping = item
             binding.savedMappingClickListener = savedMappingClickListener
 
-            val dateFrom= DateAndTimeConverter.GetISOStringDateFromCalendar(item.GetDateTimeFrom())
-            val timeFrom= DateAndTimeConverter.GetISOStringTimeFromCalendar(item.GetDateTimeFrom())
+            val dateFrom
+                    = DateAndTimeConverter.getISOStringDateFromCalendar(item.dateTimeFrom)
+            val timeFrom
+                    = DateAndTimeConverter.getISOStringTimeFromCalendar(item.dateTimeFrom)
             binding.dateTimeFrom = "$dateFrom, $timeFrom"
 
-            val dateTo = DateAndTimeConverter.GetISOStringDateFromCalendar(item.GetDateTimeTo())
-            val timeTo = DateAndTimeConverter.GetISOStringTimeFromCalendar(item.GetDateTimeTo())
+            val dateTo = DateAndTimeConverter.getISOStringDateFromCalendar(item.dateTimeTo)
+            val timeTo = DateAndTimeConverter.getISOStringTimeFromCalendar(item.dateTimeTo)
             binding.dateTimeTo = "$dateTo, $timeTo"
 
-            val participants = item.GetParticipants()
+            val participants = item.participants
             var participantsListStr = ""
             for (participant in participants) {
                 participantsListStr += "$participant; "
@@ -38,16 +43,20 @@ class SavedMappingsAdapter(val savedMappingClickListener: SavedMappingClickListe
         }
 
         companion object {
-            fun from(parent: ViewGroup): SavedMappingsAdapter.ViewHolder {
+            fun from(parent: ViewGroup): ViewHolder {
                 val layoutInflater = LayoutInflater.from(parent.context)
-                val binding = SavedMappingLayoutBinding.inflate(layoutInflater, parent, false)
-                return SavedMappingsAdapter.ViewHolder(binding)
+                val binding = SavedMappingLayoutBinding.inflate(
+                    layoutInflater,
+                    parent,
+                    false
+                )
+                return ViewHolder(binding)
             }
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        return SavedMappingsAdapter.ViewHolder.from(
+        return ViewHolder.from(
             parent
         )
     }

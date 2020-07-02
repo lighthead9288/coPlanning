@@ -1,8 +1,9 @@
-package com.example.coplanning.models
+package com.example.coplanning.models.task
 
 import com.example.coplanning.communication.ICoPlanningAPI
 import com.example.coplanning.communication.RetrofitClient
 import com.example.coplanning.helpers.DateAndTimeConverter
+import com.example.coplanning.models.user.User
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -16,22 +17,27 @@ class ServerTaskManager(ops: ITaskListOperations?) {
     private var deleteTaskCall: Call<String>? = null
     private var editTaskCall: Call<String>? = null
     private var client: ICoPlanningAPI? = null
-    private fun ClientInit() {
+
+    init {
+        clientInit()
+    }
+
+    private fun clientInit() {
         val rClient = RetrofitClient()
-        val retrofit: Retrofit = rClient.GetRetrofitEntity()
+        val retrofit: Retrofit = rClient.getRetrofitEntity()
         client = retrofit.create<ICoPlanningAPI>(ICoPlanningAPI::class.java)
     }
 
-    fun GetTasksFromServer(
+    fun getTasksFromServer(
         user: String?,
         dateTimeFrom: Calendar,
         dateTimeTo: Calendar,
         taskFilter: String?
     ) {
-        val dateFrom: String? = DateAndTimeConverter.GetISOStringDateFromCalendar(dateTimeFrom)
-        val timeFrom: String? = DateAndTimeConverter.GetISOStringTimeFromCalendar(dateTimeFrom)
-        val dateTo: String? = DateAndTimeConverter.GetISOStringDateFromCalendar(dateTimeTo)
-        val timeTo: String? = DateAndTimeConverter.GetISOStringTimeFromCalendar(dateTimeTo)
+        val dateFrom: String? = DateAndTimeConverter.getISOStringDateFromCalendar(dateTimeFrom)
+        val timeFrom: String? = DateAndTimeConverter.getISOStringTimeFromCalendar(dateTimeFrom)
+        val dateTo: String? = DateAndTimeConverter.getISOStringDateFromCalendar(dateTimeTo)
+        val timeTo: String? = DateAndTimeConverter.getISOStringTimeFromCalendar(dateTimeTo)
         getUserTaskListCall =
             client?.getUserTaskList(user, dateFrom, timeFrom, dateTo, timeTo, taskFilter)
         getUserTaskListCall!!.enqueue(object : Callback<User> {
@@ -40,8 +46,8 @@ class ServerTaskManager(ops: ITaskListOperations?) {
                 response: Response<User>
             ) {
                 val user = response.body()
-                val tasksFromServer: ArrayList<ServerTask> = user.taskList as ArrayList<ServerTask>
-                iTaskListOperations?.OnGetTasks(tasksFromServer)
+                val tasksFromServer: ArrayList<ServerTask> = user?.taskList as ArrayList<ServerTask>
+                iTaskListOperations?.onGetTasks(tasksFromServer)
             }
 
             override fun onFailure(
@@ -52,8 +58,9 @@ class ServerTaskManager(ops: ITaskListOperations?) {
         })
     }
 
-    fun AddTask(username: String, task: ServerTask) {
-        val curUserTask = UserTask(task, username)
+    fun addTask(username: String, task: ServerTask) {
+        val curUserTask =
+            UserTask(task, username)
         addTaskCall = client?.addTask(curUserTask)
         addTaskCall!!.enqueue(object : Callback<String?> {
             override fun onResponse(
@@ -70,7 +77,7 @@ class ServerTaskManager(ops: ITaskListOperations?) {
         })
     }
 
-    fun DeleteTask(
+    fun deleteTask(
         username: String?,
         taskId: Int
     ) {
@@ -80,23 +87,23 @@ class ServerTaskManager(ops: ITaskListOperations?) {
                 call: Call<String?>,
                 response: Response<String?>
             ) {
-                iTaskListOperations?.OnDeleteTasks()
+                iTaskListOperations?.onDeleteTasks()
             }
 
             override fun onFailure(
                 call: Call<String?>,
                 t: Throwable
             ) {
-                iTaskListOperations?.OnDeleteTasks()
+                iTaskListOperations?.onDeleteTasks()
             }
         })
     }
 
-    fun UpdateTask(username: String, task: ServerTask, taskId: Int) {
-        val curUserTask = UserTask(task, username)
-        curUserTask.taskNumber = taskId
+    fun updateTask(username: String, task: ServerTask, taskId: Int) {
+        val curUserTask =
+            UserTask(task, username)
+        curUserTask.setTaskNumber(taskId)
 
-       // curUserTask.SetTaskId(taskId)
         editTaskCall = client?.editTask(curUserTask)
         editTaskCall!!.enqueue(object : Callback<String?> {
             override fun onResponse(
@@ -113,12 +120,10 @@ class ServerTaskManager(ops: ITaskListOperations?) {
         })
     }
 
-    init {
-        ClientInit()
-    }
+
 }
 
 interface ITaskListOperations {
-    fun OnGetTasks(tasksFromServer: ArrayList<ServerTask>)
-    fun OnDeleteTasks()
+    fun onGetTasks(tasksFromServer: ArrayList<ServerTask>)
+    fun onDeleteTasks()
 }

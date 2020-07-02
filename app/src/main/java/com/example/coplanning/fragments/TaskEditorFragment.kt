@@ -1,5 +1,6 @@
 package com.example.coplanning.fragments
 
+import android.app.Application
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.app.TimePickerDialog.OnTimeSetListener
@@ -12,7 +13,7 @@ import androidx.fragment.app.Fragment
 import com.example.coplanning.R
 import com.example.coplanning.databinding.FragmentTaskEditorBinding
 import com.example.coplanning.globals.ScreensDataStorage
-import com.example.coplanning.models.TaskComparable
+import com.example.coplanning.models.task.TaskComparable
 import com.example.coplanning.viewmodels.TaskEditorViewModel
 import java.util.*
 
@@ -25,10 +26,11 @@ private const val TASK = "task"
  * Use the [TaskEditorFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class TaskEditorFragment : Fragment() {
+class TaskEditorFragment : Fragment(), InitViewModel {
     // TODO: Rename and change types of parameters
     private var task: TaskComparable? = null
-
+    private lateinit var binding: FragmentTaskEditorBinding
+    private lateinit var viewModel: TaskEditorViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,30 +39,21 @@ class TaskEditorFragment : Fragment() {
         }
 
         val application = requireNotNull(this.activity).application
-
-        if (ScreensDataStorage.curScheduleScreenData!=null) {
-            val data = ScreensDataStorage.curScheduleScreenData as TaskEditorFragment
-            viewModel = data.viewModel
-        }
-
-        else {
-            viewModel = task?.let {
-                    TaskEditorViewModel(it, application) { fragmentManager?.popBackStack() }
-            } ?:
-                    TaskEditorViewModel(application) { fragmentManager?.popBackStack() }
-            ScreensDataStorage.curScheduleScreenData = this
-
-        }
+        initViewModel(application)
     }
 
-    lateinit var viewModel: TaskEditorViewModel
-
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        initBinding(inflater, container)
+        // Inflate the layout for this fragment
+        return binding.root
+    }
 
-        val binding: FragmentTaskEditorBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_task_editor, container, false)
+    private fun initBinding(inflater: LayoutInflater, container: ViewGroup?) {
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_task_editor, container, false)
         binding.viewModel = viewModel
         binding.taskDateFrom.setOnClickListener {
             showSetDateFromDialog()
@@ -74,70 +67,84 @@ class TaskEditorFragment : Fragment() {
         binding.taskTimeTo.setOnClickListener {
             showSetTimeToDialog()
         }
-
         binding.lifecycleOwner = this
-        // Inflate the layout for this fragment
-        return binding.root
+    }
+
+    override fun initViewModel(application: Application) {
+        if (ScreensDataStorage.curScheduleScreenData!=null) {
+            val data = ScreensDataStorage.curScheduleScreenData as TaskEditorFragment
+            viewModel = data.viewModel
+        } else {
+            viewModel = task?.let {
+                TaskEditorViewModel(it, application) { fragmentManager?.popBackStack() }
+            } ?:
+                    TaskEditorViewModel(application) { fragmentManager?.popBackStack() }
+            ScreensDataStorage.curScheduleScreenData = this
+        }
     }
 
 
     private fun showSetDateFromDialog() {
         DatePickerDialog(
-            context!!, dFrom,
+            requireContext(), dFrom,
             viewModel.dateAndTimeFrom.get(Calendar.YEAR),
             viewModel.dateAndTimeFrom.get(Calendar.MONTH),
             viewModel.dateAndTimeFrom.get(Calendar.DAY_OF_MONTH)
         )
             .show()
     }
-    var dFrom =
+
+    private var dFrom =
         DatePickerDialog.OnDateSetListener { view, year, monthOfYear, dayOfMonth ->
-            viewModel.SetDateFromCommand(year, monthOfYear, dayOfMonth)
+            viewModel.setDateFromCommand(year, monthOfYear, dayOfMonth)
         }
 
-    fun showSetTimeFromDialog() {
+    private fun showSetTimeFromDialog() {
         TimePickerDialog(
-            context,
+            requireContext(),
             tFrom,
             viewModel.dateAndTimeFrom.get(Calendar.HOUR_OF_DAY),
             viewModel.dateAndTimeFrom.get(Calendar.MINUTE),
             true
-        ).show()
+        )
+            .show()
     }
 
-    var tFrom =
+    private var tFrom =
         OnTimeSetListener { view, hourOfDay, minute ->
-            viewModel.SetTimeFromCommand(hourOfDay, minute)
+            viewModel.setTimeFromCommand(hourOfDay, minute)
         }
 
 
     private fun showSetDateToDialog() {
         DatePickerDialog(
-            context!!, dTo,
+            requireContext(), dTo,
             viewModel.dateAndTimeTo.get(Calendar.YEAR),
             viewModel.dateAndTimeTo.get(Calendar.MONTH),
             viewModel.dateAndTimeTo.get(Calendar.DAY_OF_MONTH)
         )
             .show()
     }
-    var dTo =
+
+    private var dTo =
         DatePickerDialog.OnDateSetListener { view, year, monthOfYear, dayOfMonth ->
-            viewModel.SetDateToCommand(year, monthOfYear, dayOfMonth)
+            viewModel.setDateToCommand(year, monthOfYear, dayOfMonth)
         }
 
-    fun showSetTimeToDialog() {
+    private fun showSetTimeToDialog() {
         TimePickerDialog(
             context,
             tTo,
             viewModel.dateAndTimeTo.get(Calendar.HOUR_OF_DAY),
             viewModel.dateAndTimeTo.get(Calendar.MINUTE),
             true
-        ).show()
+        )
+            .show()
     }
 
-    var tTo =
+    private var tTo =
         OnTimeSetListener { view, hourOfDay, minute ->
-            viewModel.SetTimeToCommand(hourOfDay, minute)
+            viewModel.setTimeToCommand(hourOfDay, minute)
         }
 
     companion object {
@@ -145,8 +152,6 @@ class TaskEditorFragment : Fragment() {
          * Use this factory method to create a new instance of
          * this fragment using the provided parameters.
          *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
          * @return A new instance of fragment TaskEditorFragment.
          */
         // TODO: Rename and change types and number of parameters

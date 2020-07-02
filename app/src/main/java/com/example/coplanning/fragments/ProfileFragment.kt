@@ -11,14 +11,12 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 
 import com.example.coplanning.R
-import com.example.coplanning.communication.SocketClient
 import com.example.coplanning.databinding.FragmentProfileBinding
 import com.example.coplanning.globals.FragmentOperations
 import com.example.coplanning.globals.MenuOperations
 import com.example.coplanning.globals.ScreensDataStorage
 import com.example.coplanning.helpers.DateAndTimeConverter
 import com.example.coplanning.viewmodels.ProfileViewModel
-import java.util.*
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -30,14 +28,13 @@ private const val ARG_PARAM2 = "param2"
  * Use the [ProfileFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class ProfileFragment : Fragment() {
+class ProfileFragment : Fragment(), InitViewModel {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
 
-    lateinit var viewModel: ProfileViewModel
-
-    private val socketClient: SocketClient = SocketClient()
+    private lateinit var binding: FragmentProfileBinding
+    private lateinit var viewModel: ProfileViewModel
     private var menuOperations = MenuOperations()
     private lateinit var fragmentOperations: FragmentOperations
 
@@ -48,82 +45,83 @@ class ProfileFragment : Fragment() {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
         }
-
         val application = requireNotNull(this.activity).application
-        InitViewModel(application)
+        initViewModel(application)
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
-        val binding: FragmentProfileBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_profile, container, false)
-        binding.viewModel = viewModel
-
-        fragmentOperations = FragmentOperations(fragmentManager)
-
-        binding.username.paintFlags = binding.username.paintFlags or Paint.UNDERLINE_TEXT_FLAG
-
-        binding.defaultUnavailableTimeFrom.setOnClickListener {
-            showSetTimeFromDialog()
-        }
-        binding.defaultUnavailableTimeTo.setOnClickListener {
-            showSetTimeToDialog()
-        }
-
-        binding.logout.setOnClickListener {
-            viewModel.Logout()
-            menuOperations.HideBottomNavigationView()
-            fragmentOperations.LoadFragment(LoginFragment())
-        }
-
-        binding.lifecycleOwner = this
-
+        initFragmentOperations()
+        initBinding(inflater, container)
         return binding.root
     }
 
-    fun showSetTimeFromDialog() {
-        TimePickerDialog(
-            context,
-            tFrom,
-            DateAndTimeConverter.GetHourFromISOStringTime(viewModel.timeFromString.value.toString()),
-            DateAndTimeConverter.GetMinutesFromISOStringTime(viewModel.timeFromString.value.toString()),
-            true
-        ).show()
+    private fun initBinding(inflater: LayoutInflater, container: ViewGroup?) {
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_profile, container, false)
+        binding.viewModel = viewModel
+        binding.username.paintFlags = binding.username.paintFlags or Paint.UNDERLINE_TEXT_FLAG
+        binding.defaultUnavailableTimeFromTv.setOnClickListener {
+            showSetTimeFromDialog()
+        }
+        binding.defaultUnavailableTimeToTv.setOnClickListener {
+            showSetTimeToDialog()
+        }
+        binding.logout.setOnClickListener {
+            viewModel.logout()
+            menuOperations.hideBottomNavigationView()
+            fragmentOperations.loadFragment(LoginFragment())
+        }
+        binding.lifecycleOwner = this
     }
 
-    var tFrom =
-        TimePickerDialog.OnTimeSetListener { view, hourOfDay, minute ->
-            viewModel.SetTimeFromCommand(hourOfDay, minute)
-        }
-
-    fun showSetTimeToDialog() {
-        TimePickerDialog(
-            context,
-            tTo,
-            DateAndTimeConverter.GetHourFromISOStringTime(viewModel.timeToString.value.toString()),
-            DateAndTimeConverter.GetMinutesFromISOStringTime(viewModel.timeToString.value.toString()),
-            true
-        ).show()
+    private fun initFragmentOperations() {
+        fragmentOperations = FragmentOperations(fragmentManager)
     }
 
-    var tTo =
-        TimePickerDialog.OnTimeSetListener { view, hourOfDay, minute ->
-            viewModel.SetTimeToCommand(hourOfDay, minute)
-        }
-
-    fun InitViewModel(application: Application) {
+    override fun initViewModel(application: Application) {
         if (ScreensDataStorage.curProfileScreenData!=null) {
             val data = ScreensDataStorage.curProfileScreenData as ProfileFragment
             viewModel = data.viewModel
-        }
-
-        else {
+        } else {
             viewModel = ProfileViewModel(application)
             ScreensDataStorage.curProfileScreenData = this
         }
     }
+
+    private fun showSetTimeFromDialog() {
+        TimePickerDialog(
+            context,
+            tFrom,
+            DateAndTimeConverter.getHourFromISOStringTime(viewModel.timeFromString.value.toString()),
+            DateAndTimeConverter.getMinutesFromISOStringTime(viewModel.timeFromString.value.toString()),
+            true
+        )
+            .show()
+    }
+
+    private var tFrom =
+        TimePickerDialog.OnTimeSetListener { view, hourOfDay, minute ->
+            viewModel.setTimeFromCommand(hourOfDay, minute)
+        }
+
+    private fun showSetTimeToDialog() {
+        TimePickerDialog(
+            context,
+            tTo,
+            DateAndTimeConverter.getHourFromISOStringTime(viewModel.timeToString.value.toString()),
+            DateAndTimeConverter.getMinutesFromISOStringTime(viewModel.timeToString.value.toString()),
+            true
+        )
+            .show()
+    }
+
+    private var tTo =
+        TimePickerDialog.OnTimeSetListener { view, hourOfDay, minute ->
+            viewModel.setTimeToCommand(hourOfDay, minute)
+        }
 
     companion object {
         /**

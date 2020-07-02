@@ -13,11 +13,14 @@ import androidx.annotation.Nullable
 import com.example.coplanning.R
 import java.util.*
 
-class CalendarGridAdapter(context: Context?, private val monthlyDates: List<Date>,  private val currentDate: Calendar,
-                          private val calendarCellClickCallback: ((Calendar)->Unit)?): ArrayAdapter<Any?>(context!!, R.layout.calendar_cell_layout) {
+class CalendarGridAdapter(
+    context: Context?,
+    private val monthlyDates: List<Date>,
+    private val currentDate: Calendar,
+    private val calendarCellClickCallback: ((Calendar)->Unit)?)
+    : ArrayAdapter<Any?>(context!!, R.layout.calendar_cell_layout) {
 
-
-    private val mInflater: LayoutInflater
+    private val mInflater: LayoutInflater = LayoutInflater.from(context)
 
     @NonNull
     override fun getView(
@@ -47,14 +50,11 @@ class CalendarGridAdapter(context: Context?, private val monthlyDates: List<Date
             view!!.findViewById<View>(R.id.calendar_date_id) as TextView
         cellNumber.text = dayValue.toString()
         if (displayMonth == todayMonth && displayYear == todayYear && dayValue == todayDate) {
-            // view.setBackgroundColor(Color.parseColor("#a61b03"));
-            cellNumber.setTextColor(Color.parseColor("#a61b03"))
+            cellNumber.setTextColor(context.getColor(R.color.colorDarkRed))
         } else if (displayMonth == currentMonth && displayYear == currentYear) {
-            // view.setBackgroundColor(Color.parseColor("#FF5733"));
-            cellNumber.setTextColor(Color.parseColor("#FF5733"))
+            cellNumber.setTextColor(context.getColor(R.color.colorLightRed))
         } else {
-            // view.setBackgroundColor(Color.parseColor("#cccccc"));
-            cellNumber.setTextColor(Color.parseColor("#cccccc"))
+            cellNumber.setTextColor(context.getColor(R.color.colorLightGrey))
         }
         view.setOnClickListener { v ->
             val iterator: Iterator<*> =
@@ -65,31 +65,27 @@ class CalendarGridAdapter(context: Context?, private val monthlyDates: List<Date
                 val curView = pair.key as View
                 val curColor = pair.value as Int
 
-                //curView.setBackgroundColor(curColor);
                 val cellNumber =
                     curView.findViewById<View>(R.id.calendar_date_id) as TextView
                 cellNumber.setTextColor(curColor)
             }
 
-            //   ColorDrawable viewColor = (ColorDrawable) v.getBackground();
-            //   int prevBackgroundColor = viewColor.getColor();
-
-            //v.setBackgroundColor(Color.parseColor("#8c4c22"));
             val cellNumber =
                 v.findViewById<View>(R.id.calendar_date_id) as TextView
             val prevBackgroundColor = cellNumber.currentTextColor
             cellNumber.setTextColor(Color.parseColor("#8c4c22"))
             val calendar: Calendar = GregorianCalendar()
             calendar[displayYear, displayMonth - 1] = dayValue
-            if (calendarCellClickCallback != null) {
-                calendarCellClickCallback?.invoke(calendar)
-            }
+
+            calendarCellClickCallback?.invoke(calendar)
+
             selectedDays[v] = prevBackgroundColor
         }
         return view
     }
 
     fun onFragmentInteraction(uri: Uri?) {}
+
     override fun getCount(): Int {
         return monthlyDates.size
     }
@@ -108,8 +104,5 @@ class CalendarGridAdapter(context: Context?, private val monthlyDates: List<Date
             HashMap<View, Int>()
     }
 
-    init {
-        mInflater = LayoutInflater.from(context)
-    }
 }
 

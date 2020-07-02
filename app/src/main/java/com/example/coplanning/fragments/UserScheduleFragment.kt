@@ -3,14 +3,12 @@ package com.example.coplanning.fragments
 import android.app.AlertDialog
 import android.app.Application
 import android.app.DatePickerDialog
-import android.net.IpSecManager
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.SearchView
-import android.widget.TextView
 import androidx.databinding.DataBindingUtil
 import com.example.coplanning.R
 import com.example.coplanning.adapters.ExpandableTaskListAdapter
@@ -32,45 +30,82 @@ private const val USERNAME = "username"
  * Use the [UserScheduleFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class UserScheduleFragment : Fragment(), ISchedule {
+class UserScheduleFragment : Fragment(), ISchedule, InitViewModel {
     // TODO: Rename and change types of parameters
     private var username: String? = null
 
-    lateinit var viewModel: ScheduleViewModel
-    lateinit var fragmentOperations: FragmentOperations
+    private lateinit var binding: FragmentScheduleBinding
+    private lateinit var viewModel: ScheduleViewModel
+    private lateinit var fragmentOperations: FragmentOperations
     private lateinit var sharedPrefs: SharedPreferencesOperations
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (arguments!=null) {
             username = arguments?.getString(USERNAME)
         }
-
         val application = requireNotNull(this.activity).application
-        sharedPrefs = SharedPreferencesOperations(application)
-        InitViewModel(application)
+        initSharedPrefs(application)
+        initViewModel(application)
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        initFragmentOperations()
+        initBinding(inflater, container)
+        initObservables()
 
-        val binding: FragmentScheduleBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_schedule, container, false)
-        val application = requireNotNull(this.activity).application
+        return binding.root
+    }
+
+    private fun initSharedPrefs(application: Application) {
+        sharedPrefs = SharedPreferencesOperations(application)
+    }
+
+    private fun initFragmentOperations() {
         fragmentOperations = FragmentOperations(fragmentManager)
+    }
 
+    private fun initBinding(inflater: LayoutInflater, container: ViewGroup?) {
+        val binding: FragmentScheduleBinding = DataBindingUtil.inflate(
+            inflater,
+            R.layout.fragment_schedule,
+            container,
+            false
+        )
         binding.viewModel = viewModel
-
-        binding.calendarView.SetICalendarCellClick { calendar: Calendar ->
+        binding.calendarView.setICalendarCellClick { calendar: Calendar ->
             viewModel.SetIntervalCommand(calendar, calendar)
         }
-
         binding.dateFrom.setOnClickListener { showSetDateFromDialog() }
         binding.dateTo.setOnClickListener { showSetDateToDialog() }
+        binding.taskFilterSv.setOnQueryTextListener(object: SearchView.OnQueryTextListener,
+            androidx.appcompat.widget.SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String): Boolean {
+                viewModel.getTasks(query)
+                return false
+            }
 
+            override fun onQueryTextChange(newText: String): Boolean {
+                viewModel.getTasks(newText)
+                return false
+            }
+        })
 
+        if (isMe())
+            binding.addTaskButton.setOnClickListener {
+                val taskEditorFragment = TaskEditorFragment()
+                ScreensDataStorage.curScheduleScreenData = null
+                fragmentOperations.loadFragment(taskEditorFragment)
+            }
+        binding.lifecycleOwner = this
+    }
+
+    private fun initObservables() {
+        val application = requireNotNull(this.activity).application
         viewModel.isCalendar.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
             if (it)
                 binding.calendarButton.setImageResource(R.drawable.calendar_selected)
@@ -84,14 +119,12 @@ class UserScheduleFragment : Fragment(), ISchedule {
             else
                 binding.filterButton.setImageResource(R.drawable.filter)
         })
-
-
-        viewModel.groupedTaskList.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+        viewModel.groupedTaskList.observe(viewLifecycleOwner, androidx.lifecycle.Observer { it ->
             val groupsList = it.tasksDays.map { it.day }
             val groupedTasks = it.tasksDays
 
-            val adapter = ExpandableTaskListAdapter(application, groupsList, groupedTasks, R.layout.task_group_layout, GetTaskLayout(), viewModel.GetCurUser(),
-                {task->viewModel.SetTaskCompleted(task)},
+            val adapter = ExpandableTaskListAdapter(application, groupsList, groupedTasks, R.layout.task_group_layout, getTaskLayout(), viewModel.getCurUser(),
+                {task->viewModel.setTaskCompleted(task)},
                 {task->
                     val dialogView = LayoutInflater.from(context).inflate(R.layout.delete_task_dialog,null)
 
@@ -100,7 +133,7 @@ class UserScheduleFragment : Fragment(), ISchedule {
 
                     dialogView.confirmDelete.setOnClickListener {
                         alertDialog.dismiss()
-                        viewModel.DeleteTask(task)
+                        viewModel.deleteTask(task)
                     }
 
                     dialogView.cancelDelete.setOnClickListener {
@@ -109,11 +142,11 @@ class UserScheduleFragment : Fragment(), ISchedule {
 
                 },
                 { task, direction, callback ->
-                    viewModel.SubscribeOnUserTask(task, direction, callback)
+                    viewModel.subscribeOnUserTask(task, direction, callback)
                 }
             )
             binding.expandableTaskListLv.setAdapter(adapter)
-            if (IsMe())
+            if (isMe())
                 binding.expandableTaskListLv.setOnChildClickListener { parent, v, groupPosition, childPosition, id ->
                     val task = groupedTasks[groupPosition].tasks[childPosition]
                     val taskEditorFragment = TaskEditorFragment()
@@ -121,44 +154,34 @@ class UserScheduleFragment : Fragment(), ISchedule {
                     arguments.putSerializable("task", task)
                     taskEditorFragment.arguments = arguments
                     ScreensDataStorage.curScheduleScreenData = null
-                    fragmentOperations.LoadFragment(taskEditorFragment)
+                    fragmentOperations.loadFragment(taskEditorFragment)
 
                     false
                 }
         })
+    }
 
+    private fun isMe():Boolean {
+        return username==sharedPrefs.login
+    }
 
+    override fun getTaskLayout(): Int {
+        return if (isMe()) R.layout.task_layout else R.layout.user_task_layout
+    }
 
-        binding.taskFilterSv.setOnQueryTextListener(object: SearchView.OnQueryTextListener,
-            androidx.appcompat.widget.SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String): Boolean {
-                viewModel.GetTasks(query)
-                return false
-            }
-
-            override fun onQueryTextChange(newText: String): Boolean {
-                viewModel.GetTasks(newText)
-                return false
-            }
-        })
-
-        if (IsMe())
-            binding.addTaskButton.setOnClickListener {
-                val taskEditorFragment = TaskEditorFragment()
-                ScreensDataStorage.curScheduleScreenData = null
-                fragmentOperations.LoadFragment(taskEditorFragment)
-            }
-
-        binding.lifecycleOwner = this
-
-
-
-        return binding.root
+    override fun initViewModel(application: Application) {
+        if (ScreensDataStorage.curSearchScreenData!=null) {
+            val data = ScreensDataStorage.curSearchScreenData as UserScheduleFragment
+            viewModel = data.viewModel
+        } else {
+            viewModel = ScheduleViewModel(application, username.toString())
+            ScreensDataStorage.curSearchScreenData = this
+        }
     }
 
     private fun showSetDateFromDialog() {
         DatePickerDialog(
-            context!!, dFrom,
+            requireContext(), dFrom,
             viewModel.dateAndTimeFrom.get(Calendar.YEAR),
             viewModel.dateAndTimeFrom.get(Calendar.MONTH),
             viewModel.dateAndTimeFrom.get(Calendar.DAY_OF_MONTH)
@@ -167,13 +190,13 @@ class UserScheduleFragment : Fragment(), ISchedule {
     }
     var dFrom =
         DatePickerDialog.OnDateSetListener { view, year, monthOfYear, dayOfMonth ->
-            viewModel.SetFromDateCommand(GregorianCalendar(year, monthOfYear, dayOfMonth))
-            viewModel.GetTasks()
+            viewModel.setFromDateCommand(GregorianCalendar(year, monthOfYear, dayOfMonth))
+            viewModel.getTasks()
         }
 
     private fun showSetDateToDialog() {
         DatePickerDialog(
-            context!!, dTo,
+            requireContext(), dTo,
             viewModel.dateAndTimeTo.get(Calendar.YEAR),
             viewModel.dateAndTimeTo.get(Calendar.MONTH),
             viewModel.dateAndTimeTo.get(Calendar.DAY_OF_MONTH)
@@ -182,8 +205,8 @@ class UserScheduleFragment : Fragment(), ISchedule {
     }
     var dTo =
         DatePickerDialog.OnDateSetListener { view, year, monthOfYear, dayOfMonth ->
-            viewModel.SetToDateCommand(GregorianCalendar(year, monthOfYear, dayOfMonth))
-            viewModel.GetTasks()
+            viewModel.setToDateCommand(GregorianCalendar(year, monthOfYear, dayOfMonth))
+            viewModel.getTasks()
         }
 
     companion object {
@@ -205,26 +228,5 @@ class UserScheduleFragment : Fragment(), ISchedule {
             }
     }
 
-    fun IsMe():Boolean {
-        return username==sharedPrefs.login
-    }
 
-    override fun GetTaskLayout(): Int {
-        if (IsMe())
-            return R.layout.task_layout
-        else
-            return R.layout.user_task_layout
-    }
-
-    override fun InitViewModel(application: Application) {
-        if (ScreensDataStorage.curSearchScreenData!=null) {
-            val data = ScreensDataStorage.curSearchScreenData as UserScheduleFragment
-            viewModel = data.viewModel
-        }
-
-        else {
-            viewModel = ScheduleViewModel(application, username.toString())
-            ScreensDataStorage.curSearchScreenData = this
-        }
-    }
 }

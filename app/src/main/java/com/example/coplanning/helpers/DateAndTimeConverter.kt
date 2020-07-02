@@ -7,8 +7,7 @@ import java.util.*
 class DateAndTimeConverter {
 
     companion object {
-
-        fun ConvertToStringDate(year: Int, month: Int, date: Int): String? {
+        fun convertToStringDate(year: Int, month: Int, date: Int): String? {
             var strDate = date.toString()
             strDate = if (strDate.length > 1) strDate else "0$strDate"
             var strMonth = month.toString()
@@ -17,7 +16,7 @@ class DateAndTimeConverter {
             return "$strDate.$strMonth.$strYear"
         }
 
-        fun ConvertToStringTime(hours: Int, minutes: Int): String? {
+        fun convertToStringTime(hours: Int, minutes: Int): String? {
             var strHours = hours.toString()
             strHours = if (strHours.length > 1) strHours else "0$strHours"
             var strMinutes = minutes.toString()
@@ -25,7 +24,7 @@ class DateAndTimeConverter {
             return "$strHours-$strMinutes"
         }
 
-        fun ConvertToISOStringDate(year: Int, month: Int, date: Int): String {
+        fun convertToISOStringDate(year: Int, month: Int, date: Int): String {
             var strDate = date.toString()
             strDate = if (strDate.length > 1) strDate else "0$strDate"
             var strMonth = month.toString()
@@ -34,7 +33,7 @@ class DateAndTimeConverter {
             return "$strYear-$strMonth-$strDate"
         }
 
-        fun ConvertToISOStringTime(hours: Int, minutes: Int): String {
+        fun convertToISOStringTime(hours: Int, minutes: Int): String {
             var strHours = hours.toString()
             strHours = if (strHours.length > 1) strHours else "0$strHours"
             var strMinutes = minutes.toString()
@@ -43,109 +42,105 @@ class DateAndTimeConverter {
         }
 
 
-        fun ConvertStringDateToISO(date: String): String? {
-            val dateVals = GetDateValuesFromStringDate(date)
+        fun convertStringDateToISO(date: String): String? {
+            val dateVals = getDateValuesFromStringDate(date)
             val intYear = dateVals[2].toInt()
             val intMonth = dateVals[1].toInt()
             val intDate = dateVals[0].toInt()
-            return ConvertToISOStringDate(intYear, intMonth, intDate)
+            return convertToISOStringDate(intYear, intMonth, intDate)
         }
 
-        fun ConvertStringTimeToISO(time: String): String? {
+        fun convertStringTimeToISO(time: String): String? {
             val timeVals = time.split("-").toTypedArray()
             val intHours = timeVals[0].toInt()
             val intMinutes = timeVals[1].toInt()
-            return ConvertToISOStringTime(intHours, intMinutes)
+            return convertToISOStringTime(intHours, intMinutes)
         }
 
-        private fun GetValuesFromISODateTimeString(dateTime: String): Array<String?>? {
-            return dateTime.split("'T'").toTypedArray()
-        }
-
-        private fun GetDateValuesFromStringDate(date: String): Array<String> {
+        private fun getDateValuesFromStringDate(date: String): Array<String> {
             return date.split(".").toTypedArray()
         }
 
-        private fun GetDateValuesFromISOStringDate(date: String): Array<String> {
+        private fun getDateValuesFromISOStringDate(date: String): Array<String> {
             return date.split("-").toTypedArray()
         }
 
-        fun GetYearFromStringDate(date: String): Int {
-            val dateVals = GetDateValuesFromStringDate(date)
+        fun getYearFromStringDate(date: String): Int {
+            val dateVals = getDateValuesFromStringDate(date)
             return dateVals[2].toInt()
         }
 
-        fun GetMonthFromStringDate(date: String): Int {
-            val dateVals = GetDateValuesFromStringDate(date)
+        fun getMonthFromStringDate(date: String): Int {
+            val dateVals = getDateValuesFromStringDate(date)
             return dateVals[1].toInt()
         }
 
-        fun GetDayFromStringDate(date: String): Int {
-            val dateVals = GetDateValuesFromStringDate(date)
+        fun getDayFromStringDate(date: String): Int {
+            val dateVals = getDateValuesFromStringDate(date)
             return dateVals[0].toInt()
         }
 
-        fun GetYearFromISOStringDate(date: String): Int {
-            val dateVals = GetDateValuesFromISOStringDate(date)
+        fun getYearFromISOStringDate(date: String): Int {
+            val dateVals = getDateValuesFromISOStringDate(date)
             return dateVals[0].toInt()
         }
 
-        fun GetMonthFromISOStringDate(date: String): Int {
-            val dateVals = GetDateValuesFromISOStringDate(date)
+        fun getMonthFromISOStringDate(date: String): Int {
+            val dateVals = getDateValuesFromISOStringDate(date)
             return dateVals[1].toInt()
         }
 
-        fun GetDayFromISOStringDate(date: String): Int {
-            val dateVals = GetDateValuesFromISOStringDate(date)
+        fun getDayFromISOStringDate(date: String): Int {
+            val dateVals = getDateValuesFromISOStringDate(date)
             return dateVals[2].toInt()
         }
 
 
-        private fun GetTimeValuesFromStringTime(time: String): Array<String> {
+        private fun getTimeValuesFromStringTime(time: String): Array<String> {
             return time.split("-").toTypedArray()
         }
 
-        private fun GetTimeValuesFromISOStringTime(time: String): Array<String> {
+        private fun getTimeValuesFromISOStringTime(time: String): Array<String> {
             return time.split(":").toTypedArray()
         }
 
-        fun GetHourFromStringTime(time: String): Int {
-            val timeVals = GetTimeValuesFromStringTime(time)
+        fun getHourFromStringTime(time: String): Int {
+            val timeVals = getTimeValuesFromStringTime(time)
             return timeVals[0].toInt()
         }
 
-        fun GetMinutesFromStringTime(time: String): Int {
-            val timeVals = GetTimeValuesFromStringTime(time)
+        fun getMinutesFromStringTime(time: String): Int {
+            val timeVals = getTimeValuesFromStringTime(time)
             return timeVals[1].toInt()
         }
 
-        fun GetHourFromISOStringTime(time: String): Int {
-            val timeVals = GetTimeValuesFromISOStringTime(time)
+        fun getHourFromISOStringTime(time: String): Int {
+            val timeVals = getTimeValuesFromISOStringTime(time)
             return timeVals[0].toInt()
         }
 
-        fun GetMinutesFromISOStringTime(time: String): Int {
-            val timeVals = GetTimeValuesFromISOStringTime(time)
+        fun getMinutesFromISOStringTime(time: String): Int {
+            val timeVals = getTimeValuesFromISOStringTime(time)
             return timeVals[1].toInt()
         }
 
-        fun GetISOStringDateFromISOString(isoDateTime: String): String? {
-            val calendar = GetCalendarDateTimeFromISOString(isoDateTime)
+        fun getISOStringDateFromISOString(isoDateTime: String): String? {
+            val calendar = getCalendarDateTimeFromISOString(isoDateTime)
             val year = calendar[Calendar.YEAR]
             val month = calendar[Calendar.MONTH] + 1
             val day = calendar[Calendar.DAY_OF_MONTH]
-            return ConvertToISOStringDate(year, month, day)
+            return convertToISOStringDate(year, month, day)
         }
 
-        fun GetISOStringTimeFromISOString(isoDateTime: String): String? {
-            val calendar = GetCalendarDateTimeFromISOString(isoDateTime)
+        fun getISOStringTimeFromISOString(isoDateTime: String): String? {
+            val calendar = getCalendarDateTimeFromISOString(isoDateTime)
             val hours = calendar[Calendar.HOUR_OF_DAY]
             val minutes = calendar[Calendar.MINUTE]
-            return ConvertToISOStringTime(hours, minutes)
+            return convertToISOStringTime(hours, minutes)
         }
 
 
-        fun GetCalendarDateTimeFromISOString(isoDateTime: String): Calendar {
+        fun getCalendarDateTimeFromISOString(isoDateTime: String): Calendar {
             val cal = Calendar.getInstance()
             val df = SimpleDateFormat(
                 "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
@@ -162,44 +157,34 @@ class DateAndTimeConverter {
             return cal
         }
 
-        fun GetStringDateFromCalendar(calendar: Calendar): String? {
+        fun getStringDateFromCalendar(calendar: Calendar): String? {
             val date = calendar[Calendar.DAY_OF_MONTH]
             val month = calendar[Calendar.MONTH]
             val year = calendar[Calendar.YEAR]
             val dispMonth = month + 1
-            return DateAndTimeConverter.ConvertToStringDate(
+            return convertToStringDate(
                 year,
                 dispMonth,
                 date
             )
         }
 
-        fun GetStringTimeFromCalendar(calendar: Calendar): String? {
-            val hours = calendar[Calendar.HOUR_OF_DAY]
-            val minutes = calendar[Calendar.MINUTE]
-            return DateAndTimeConverter.ConvertToStringTime(
-                hours,
-                minutes
-            )
-        }
-
-
-        fun GetISOStringDateFromCalendar(calendar: Calendar): String? {
+        fun getISOStringDateFromCalendar(calendar: Calendar): String? {
             val date = calendar[Calendar.DAY_OF_MONTH]
             val month = calendar[Calendar.MONTH]
             val year = calendar[Calendar.YEAR]
             val dispMonth = month + 1
-            return DateAndTimeConverter.ConvertToISOStringDate(
+            return convertToISOStringDate(
                 year,
                 dispMonth,
                 date
             )
         }
 
-        fun GetISOStringTimeFromCalendar(calendar: Calendar): String? {
+        fun getISOStringTimeFromCalendar(calendar: Calendar): String? {
             val hours = calendar[Calendar.HOUR_OF_DAY]
             val minutes = calendar[Calendar.MINUTE]
-            return DateAndTimeConverter.ConvertToISOStringTime(
+            return convertToISOStringTime(
                 hours,
                 minutes
             )

@@ -9,40 +9,48 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.coplanning.databinding.NotificationLayoutBinding
 import com.example.coplanning.helpers.DateAndTimeConverter
-import com.example.coplanning.models.Notification
+import com.example.coplanning.models.notification.Notification
 
-class NotificationsAdapter: ListAdapter<Notification, NotificationsAdapter.ViewHolder>(NotificationsListDiffCallback()) {
+class NotificationsAdapter
+    : ListAdapter<Notification, NotificationsAdapter.ViewHolder>(NotificationsListDiffCallback()) {
 
-    class ViewHolder private constructor(val binding: NotificationLayoutBinding): RecyclerView.ViewHolder(binding.root) {
+    class ViewHolder private constructor(
+        val binding: NotificationLayoutBinding): RecyclerView.ViewHolder(binding.root) {
 
         fun bind(item: Notification) {
-
-            val date = DateAndTimeConverter.GetISOStringDateFromISOString(item.GetDateTime())
-            val time = DateAndTimeConverter.GetISOStringTimeFromISOString(item.GetDateTime())
+            val date = DateAndTimeConverter.getISOStringDateFromISOString(item.dateTime)
+            val time = DateAndTimeConverter.getISOStringTimeFromISOString(item.dateTime)
             binding.dateTime = "$date, $time"
-
             binding.senderTv.paintFlags = binding.senderTv.paintFlags or Paint.UNDERLINE_TEXT_FLAG
-            binding.sender = item.GetSender()
-
-            binding.description = item.GetDescription()
+            binding.sender = item.sender
+            binding.description = item.description
 
             val nameChanges =
-                if (item.GetNameChanges().isNullOrEmpty()) "" else "Name: " + item.GetNameChanges() + "\n"
+                if (item.additionalInfo.name.isNullOrEmpty()) ""
+                else "Name: " + item.additionalInfo.name + "\n"
             val commentChanges =
-                if (item.GetCommentChanges().isNullOrEmpty()) "" else """ Comment: ${item.GetCommentChanges()}"""
+                if (item.additionalInfo.comment.isNullOrEmpty()) ""
+                else """ Comment: ${item.additionalInfo.comment}"""
             val dateTimeFromChanges =
-                if (item.GetDateTimeFromChanges().isNullOrEmpty()) "" else """ Start date: ${item.GetDateTimeFromChanges()}"""
+                if (item.additionalInfo.dateTimeFrom.isNullOrEmpty()) ""
+                else """ Start date: ${item.additionalInfo.dateTimeFrom}"""
             val dateTimeToChanges =
-                if (item.GetDateTimeToChanges().isNullOrEmpty()) "" else """ Finish date: ${item.GetDateTimeToChanges()}"""
+                if (item.additionalInfo.dateTimeTo.isNullOrEmpty()) ""
+                else """ Finish date: ${item.additionalInfo.dateTimeTo}"""
             binding.additionalInfo =
                 nameChanges + commentChanges + dateTimeFromChanges + dateTimeToChanges
         }
 
         companion object {
-            fun from(parent: ViewGroup): NotificationsAdapter.ViewHolder {
+            fun from(parent: ViewGroup): ViewHolder {
                  val layoutInflater = LayoutInflater.from(parent.context)
-                 val binding = NotificationLayoutBinding.inflate(layoutInflater, parent, false)
-                 return NotificationsAdapter.ViewHolder(binding)
+                 val binding
+                         = NotificationLayoutBinding.inflate(
+                            layoutInflater,
+                            parent,
+                     false
+                 )
+                 return ViewHolder(binding)
 
             }
         }
@@ -50,12 +58,12 @@ class NotificationsAdapter: ListAdapter<Notification, NotificationsAdapter.ViewH
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        return NotificationsAdapter.ViewHolder.from(
+        return ViewHolder.from(
             parent
         )
     }
 
-    override fun onBindViewHolder(holder: NotificationsAdapter.ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = getItem(position)
         holder.bind(item)
     }

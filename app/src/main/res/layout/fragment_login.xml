@@ -24,7 +24,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="80dp"
                 android:text="@string/login"
-                android:textSize="30dp"
+                android:textSize="30sp"
                 app:layout_constraintStart_toStartOf="@+id/loginEditText"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -36,13 +36,13 @@
                 android:layout_marginBottom="8dp"
                 android:background="@drawable/rounded_edittext"
                 android:hint="@string/enter_username"
+                android:autofillHints="@string/enter_username"
                 android:inputType="textPersonName"
                 android:text="@={viewModel.username}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/loginTextView"
-
                 app:layout_constraintVertical_bias="0.008" />
 
             <TextView
@@ -52,7 +52,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="9dp"
                 android:text="@string/password"
-                android:textSize="30dp"
+                android:textSize="30sp"
                 app:layout_constraintStart_toStartOf="@+id/passwordEditText"
                 app:layout_constraintTop_toBottomOf="@+id/loginEditText" />
 
@@ -63,6 +63,7 @@
                 android:layout_marginTop="8dp"
                 android:background="@drawable/rounded_edittext"
                 android:hint="@string/enter_password"
+                android:autofillHints="@string/enter_password"
                 android:inputType="textPassword"
                 android:text="@={viewModel.password}"
                 app:layout_constraintEnd_toEndOf="@+id/loginEditText"
@@ -89,7 +90,7 @@
                 android:layout_height="51dp"
                 android:layout_marginTop="12dp"
                 android:background="@drawable/buttonshape"
-                android:text="Register"
+                android:text="@string/register"
                 android:textColor="@color/colorWhite"
                 app:layout_constraintEnd_toEndOf="@+id/signButton"
                 app:layout_constraintStart_toStartOf="@+id/signButton"

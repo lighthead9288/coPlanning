@@ -1,6 +1,4 @@
-package com.example.coplanning.models
-
-import java.util.*
+package com.example.coplanning.models.task
 
 data class GroupedTasksCollection(val tasksDays: List<DayWithTasks>)
 
